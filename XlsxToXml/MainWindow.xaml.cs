@@ -51,9 +51,16 @@ namespace XlsxToXml
             importXlsxRootPathTextBox.Text = System.IO.Path.GetFullPath(Environment.CurrentDirectory + configData.ImportXlsxRelativePath);
             exportXmlRootPathTextBox.Text = System.IO.Path.GetFullPath(Environment.CurrentDirectory + configData.ExportXmlRelativePath);
             exportCSRootPathTextBox.Text = System.IO.Path.GetFullPath(Environment.CurrentDirectory + configData.ExportCSRelativePath);
-            using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + configData.CSClassTemplateFileRelativePath))
+            if(File.Exists(Environment.CurrentDirectory + configData.CSClassTemplateFileRelativePath))
             {
-                XLSXFile.SetCSClassTemplateContent(streamReader.ReadToEnd());
+                using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + configData.CSClassTemplateFileRelativePath))
+                {
+                    XLSXFile.SetCSClassTemplateContent(streamReader.ReadToEnd());
+                }
+            }
+            else
+            {
+                Log("缺少CSClass模板！");
             }
         }
 

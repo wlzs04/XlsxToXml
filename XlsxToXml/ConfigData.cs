@@ -13,7 +13,7 @@ namespace XlsxToXml
         public string ExportXmlRelativePath { get; set; } = "/../";
         public string ExportCSRelativePath { get; set; } = "/../";
         public string CSClassTemplateFileRelativePath { get; private set; } = "/CSClassTemplate.txt";
-        
+
         string configPath = "";
 
         public ConfigData(string configPath)

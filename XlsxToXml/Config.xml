@@ -1,0 +1,6 @@
+﻿<Config>
+  <ImportXlsxRelativePath>/..\..\../</ImportXlsxRelativePath>
+  <ExportXmlRelativePath>/../</ExportXmlRelativePath>
+  <ExportCSRelativePath>/../</ExportCSRelativePath>
+  <CSClassTemplateFileRelativePath>/CSClassTemplate.txt</CSClassTemplateFileRelativePath>
+</Config>
