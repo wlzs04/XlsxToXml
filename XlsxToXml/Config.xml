@@ -1,6 +1,27 @@
-﻿<Config>
-  <ImportXlsxRelativePath>/..\..\../</ImportXlsxRelativePath>
-  <ExportXmlRelativePath>/../</ExportXmlRelativePath>
-  <ExportCSRelativePath>/../</ExportCSRelativePath>
+<Config>
+  <ImportXlsxRelativePath>/..\..\..\..\..\YiSiHoliday\Document\Artres\Config\Recorder/</ImportXlsxRelativePath>
+  <ExportXmlRelativePath>/./</ExportXmlRelativePath>
+  <ExportCSRelativePath>/./</ExportCSRelativePath>
   <CSClassTemplateFileRelativePath>/CSClassTemplate.txt</CSClassTemplateFileRelativePath>
+  <CSClassPropertyTemplateMap>
+    <Property>
+<![CDATA[        ///<summary>
+        /// {propertyConfigName} {propertyDescription}
+        ///<summary>
+        public {propertyClassName} {propertyValueName} { get; private set; }]]>
+      </Property>
+    <LoadFunction>
+<![CDATA[                    case "{propertyValueName}":
+                    {propertyValueName} = {convertFunction}
+                    break;]]>
+    </LoadFunction>
+  </CSClassPropertyTemplateMap>
+  <ConvertFunctionTemplateMap>
+    <int>Convert.ToInt32(attributeValue);</int>
+    <string>attributeValue;</string>
+    <float>(float)Convert.ToDouble(attributeValue);</float>
+    <bool>Convert.ToBoolean(attributeValue);</bool>
+    <enum>({propertyClassName})Enum.Parse(typeof({propertyClassName}), attributeValue);</enum>
+    <default>({propertyClassName})HelpManager.ConvertStringToObjectByType(typeof({propertyClassName}),attributeValue);</default>
+  </ConvertFunctionTemplateMap>
 </Config>

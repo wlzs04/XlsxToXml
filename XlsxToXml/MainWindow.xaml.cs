@@ -47,7 +47,7 @@ namespace XlsxToXml
             fileListBox.SelectionMode = SelectionMode.Multiple;
 
             //初始化配置
-            configData = new ConfigData(Environment.CurrentDirectory + "/Config.xml");
+            configData = ConfigData.GetSingle();
             importXlsxRootPathTextBox.Text = System.IO.Path.GetFullPath(Environment.CurrentDirectory + configData.ImportXlsxRelativePath);
             exportXmlRootPathTextBox.Text = System.IO.Path.GetFullPath(Environment.CurrentDirectory + configData.ExportXmlRelativePath);
             exportCSRootPathTextBox.Text = System.IO.Path.GetFullPath(Environment.CurrentDirectory + configData.ExportCSRelativePath);
@@ -90,7 +90,7 @@ namespace XlsxToXml
                 {
                     if (filePath.StartsWith(importXlsxRootPathTextBox.Text))
                     {
-                        string fileRelativePath = filePath.Substring(importXlsxRootPathTextBox.Text.Length + 1);
+                        string fileRelativePath = System.IO.Path.GetRelativePath(importXlsxRootPathTextBox.Text, filePath);
                         if (!fileRelativePath.Contains("~$"))
                         {
                             fileListBox.Items.Add(fileRelativePath);
@@ -108,6 +108,7 @@ namespace XlsxToXml
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
             dialog.IsFolderPicker = true;//设置为选择文件夹
+            dialog.InitialDirectory = exportXmlRootPathTextBox.Text;
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 exportXmlRootPathTextBox.Text = dialog.FileName;
@@ -118,6 +119,7 @@ namespace XlsxToXml
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
             dialog.IsFolderPicker = true;//设置为选择文件夹
+            dialog.InitialDirectory = exportCSRootPathTextBox.Text;
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 exportCSRootPathTextBox.Text = dialog.FileName;
@@ -140,7 +142,6 @@ namespace XlsxToXml
         private void GenFileButton_Click(object sender, RoutedEventArgs e)
         {
             logTextBox.Text = "";
-            Log($"开始生成文件！");
             if (fileListBox.Items.Count <= 0)
             {
                 Log($"没有需要生成的文件！");
@@ -148,8 +149,6 @@ namespace XlsxToXml
             }
 
             GenFile();
-
-            Log($"生成文件结束！");
         }
 
         /// <summary>
@@ -195,6 +194,7 @@ namespace XlsxToXml
 
             await Task.Run(() =>
             {
+                Log($"开始生成文件！");
                 foreach (string xlsxFileRelativePath in fileRelaticePathList)
                 {
                     string xlsxFilePath = importXlsxRootPathText + "/" + xlsxFileRelativePath;
@@ -216,6 +216,7 @@ namespace XlsxToXml
                         xlsxFile.ExportCS(csFilePath);
                     }
                 }
+                Log($"生成文件结束！");
             });
         }
 

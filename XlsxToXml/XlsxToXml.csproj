@@ -23,4 +23,13 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Config.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CSClassTemplate.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

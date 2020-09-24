@@ -7,21 +7,41 @@ using System.Xml.Linq;
 
 namespace XlsxToXml
 {
+    /// <summary>
+    /// 配置类
+    /// </summary>
     class ConfigData
     {
         public string ImportXlsxRelativePath { get; set; } = "/../";
         public string ExportXmlRelativePath { get; set; } = "/../";
         public string ExportCSRelativePath { get; set; } = "/../";
         public string CSClassTemplateFileRelativePath { get; private set; } = "/CSClassTemplate.txt";
+        
+        public Dictionary<string,string> CSClassPropertyTemplateMap { get; private set; } = new Dictionary<string, string>();
+        public Dictionary<string,string> ConvertFunctionTemplateMap { get; private set; } = new Dictionary<string, string>();
 
         string configPath = "";
 
-        public ConfigData(string configPath)
+        static ConfigData configData = new ConfigData(Environment.CurrentDirectory + "/Config.xml");
+
+        private ConfigData(string configPath)
         {
             this.configPath = configPath;
             Load();
         }
 
+        /// <summary>
+        /// 获得单例
+        /// </summary>
+        /// <returns></returns>
+        public static ConfigData GetSingle()
+        {
+            return configData;
+        }
+
+        /// <summary>
+        /// 加载
+        /// </summary>
         void Load()
         {
             if (!File.Exists(configPath))
@@ -53,24 +73,55 @@ namespace XlsxToXml
                 {
                     CSClassTemplateFileRelativePath = attributeValue;
                 }
+                else if (attributeName == "CSClassPropertyTemplateMap")
+                {
+                    CSClassPropertyTemplateMap.Clear();
+                    foreach (var CSClassPropertyTemplateElement in xElement.Elements())
+                    {
+                        CSClassPropertyTemplateMap.Add(CSClassPropertyTemplateElement.Name.LocalName, CSClassPropertyTemplateElement.Value);
+                    }
+                }
+                else if (attributeName == "ConvertFunctionTemplateMap")
+                {
+                    ConvertFunctionTemplateMap.Clear();
+                    foreach (var ConvertFunctionTemplateElement in xElement.Elements())
+                    {
+                        ConvertFunctionTemplateMap.Add(ConvertFunctionTemplateElement.Name.LocalName, ConvertFunctionTemplateElement.Value);
+                    }
+                }
             }
         }
 
+        /// <summary>
+        /// 保存
+        /// </summary>
         public void Save()
         {
+            XElement csClassPropertyTemplateMapElement = new XElement("CSClassPropertyTemplateMap");
+            foreach (var item in CSClassPropertyTemplateMap)
+            {
+                csClassPropertyTemplateMapElement.Add(new XElement(item.Key, new XCData(item.Value)));
+            }
+            XElement convertFunctionTemplateMapElement = new XElement("ConvertFunctionTemplateMap");
+            foreach (var item in ConvertFunctionTemplateMap)
+            {
+                convertFunctionTemplateMapElement.Add(new XElement(item.Key, new XCData(item.Value)));
+            }
             XDocument doc = new XDocument(
                 new XElement("Config",
                     new XElement("ImportXlsxRelativePath", ImportXlsxRelativePath),
                     new XElement("ExportXmlRelativePath", ExportXmlRelativePath),
                     new XElement("ExportCSRelativePath", ExportCSRelativePath),
-                    new XElement("CSClassTemplateFileRelativePath", CSClassTemplateFileRelativePath)
+                    new XElement("CSClassTemplateFileRelativePath", CSClassTemplateFileRelativePath),
+                    csClassPropertyTemplateMapElement,
+                    convertFunctionTemplateMapElement
                 )
             );
             //保存时忽略声明
             XmlWriterSettings xws = new XmlWriterSettings();
             xws.OmitXmlDeclaration = true;
             xws.Indent = true;
-            FileStream fileStream = new FileStream(configPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            FileStream fileStream = new FileStream(configPath, FileMode.Create, FileAccess.ReadWrite);
             using (XmlWriter xmlWriter = XmlWriter.Create(fileStream, xws))
             {
                 doc.Save(xmlWriter);

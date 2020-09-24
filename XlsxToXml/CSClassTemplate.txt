@@ -1,13 +1,27 @@
-using Assets.Script.Common.Xml;
+using Assets.Script.Manager;
 using System;
+using System.Xml.Linq;
 
 namespace Assets.Script.Config.Recorder
 {
     /// <summary>
     /// 配置
     /// </summary>
-    class {className}Recorder : RecorderBase
+    class {className} : RecorderBase
     {
-{property}
+{Property}
+
+        public void LoadFromXmlNode(XElement xmlNode)
+        {
+            foreach (XAttribute attribute in xmlNode.Attributes())
+            {
+                string attributeName = attribute.Name.LocalName;
+                string attributeValue = attribute.Value;
+                switch (attributeName)
+                {
+{LoadFunction}
+                }
+            }
+        }
     }
 }

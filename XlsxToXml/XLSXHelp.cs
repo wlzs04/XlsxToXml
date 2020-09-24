@@ -24,7 +24,7 @@ namespace XlsxToXml
         /// <summary>
         /// 属性名称
         /// </summary>
-        List<string> propertyValueList = new List<string>();
+        List<string> propertyValueNameList = new List<string>();
         /// <summary>
         /// 是否需要导出
         /// </summary>
@@ -32,15 +32,15 @@ namespace XlsxToXml
         /// <summary>
         /// 类型名称
         /// </summary>
-        List<string> classNameList = new List<string>();
+        List<string> propertyClassNameList = new List<string>();
         /// <summary>
         /// 规则描述，一般为空
         /// </summary>
-        List<string> ruleList = new List<string>();
+        List<string> propertyDescriptionList = new List<string>();
         /// <summary>
         /// 配置名称，作为属性名称的注释
         /// </summary>
-        List<string> configNameList = new List<string>();
+        List<string> propertyConfigNameList = new List<string>();
 
         public XLSXFile(string xlsxFilePath)
         {
@@ -94,7 +94,7 @@ namespace XlsxToXml
             //xlsx文件格式：第一行，为属性名称
             foreach (object item in xlsxDataRowCollection[0].ItemArray)
             {
-                propertyValueList.Add(item.ToString());
+                propertyValueNameList.Add(item.ToString());
             }
             //xlsx文件格式：第二行，是否需要导出
             foreach (object item in xlsxDataRowCollection[1].ItemArray)
@@ -105,17 +105,17 @@ namespace XlsxToXml
             //xlsx文件格式：第三行，为类型名称
             foreach (object item in xlsxDataRowCollection[2].ItemArray)
             {
-                classNameList.Add(item.ToString());
+                propertyClassNameList.Add(item.ToString());
             }
             //xlsx文件格式：第四行，为规则描述，一般为空
             foreach (object item in xlsxDataRowCollection[3].ItemArray)
             {
-                ruleList.Add(item.ToString());
+                propertyDescriptionList.Add(item.ToString());
             }
             //xlsx文件格式：第五行，为配置名称，作为属性名称的注释
             foreach (object item in xlsxDataRowCollection[4].ItemArray)
             {
-                configNameList.Add(item.ToString());
+                propertyConfigNameList.Add(item.ToString());
             }
         }
 
@@ -142,7 +142,7 @@ namespace XlsxToXml
                 {
                     if (needExportList[i])
                     {
-                        recordNode.Add(new XAttribute(propertyValueList[i], itemArray[i]));
+                        recordNode.Add(new XAttribute(propertyValueNameList[i], itemArray[i]));
                     }
                 }
                 doc.Root.Add(recordNode);
@@ -179,21 +179,42 @@ namespace XlsxToXml
             {
                 fileInfo.Directory.Create();
             }
-            FileStream fileStream = new FileStream(exportCSFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            FileStream fileStream = new FileStream(exportCSFilePath, FileMode.Create, FileAccess.ReadWrite);
             using (StreamWriter streamWriter = new StreamWriter(fileStream))
             {
                 StringBuilder csClassContent = new StringBuilder(csClassTemplateContent);
+                //替换类名
                 csClassContent.Replace("{className}", fileName);
-                StringBuilder propertyContent = new StringBuilder();
-                for (int i = 0; i < propertyValueList.Count; i++)
+                //替换属性模板
+                Dictionary<string, string> propertyTemplateMap = ConfigData.GetSingle().CSClassPropertyTemplateMap;
+                Dictionary<string, string> convertFunctionTemplateMap = ConfigData.GetSingle().ConvertFunctionTemplateMap;
+                foreach (var property in propertyTemplateMap)
                 {
-                    propertyContent.AppendLine($"		///<summary>");
-                    propertyContent.AppendLine($"		/// {configNameList[i]}");
-                    propertyContent.AppendLine($"		///<summary>");
-                    propertyContent.AppendLine($"		[XmlProperty]");
-                    propertyContent.AppendLine($"		public {classNameList[i]} {propertyValueList[i]} {{ get; private set; }}");
+                    StringBuilder propertyTotalContent = new StringBuilder();
+                    for (int i = 0; i < propertyValueNameList.Count; i++)
+                    {
+                        StringBuilder propertyEveryContent = new StringBuilder(property.Value);
+                        //根据类型替换转换方法模板
+                        if(convertFunctionTemplateMap.ContainsKey(propertyClassNameList[i]))
+                        {
+                            propertyEveryContent.Replace("{convertFunction}", convertFunctionTemplateMap[propertyClassNameList[i]]);
+                        }
+                        else
+                        {
+                            propertyEveryContent.Replace("{convertFunction}", convertFunctionTemplateMap["default"]);
+                        }
+                        propertyEveryContent.Replace("{propertyConfigName}",propertyConfigNameList[i]);
+                        propertyEveryContent.Replace("{propertyDescription}", propertyDescriptionList[i]);
+                        propertyEveryContent.Replace("{propertyClassName}", propertyClassNameList[i]);
+                        propertyEveryContent.Replace("{propertyValueName}", propertyValueNameList[i]);
+                        propertyTotalContent.Append(propertyEveryContent.ToString());
+                        if (i != propertyValueNameList.Count-1)
+                        {
+                            propertyTotalContent.AppendLine();
+                        }
+                    }
+                    csClassContent.Replace($"{{{property.Key}}}", propertyTotalContent.ToString());
                 }
-                csClassContent.Replace("{property}", propertyContent.ToString());
                 streamWriter.WriteLine(csClassContent.ToString());
                 streamWriter.Flush();
             }
