@@ -125,6 +125,9 @@ namespace XlsxToXml
         /// <param name="exportXMLFilePath"></param>
         public void ExportXML(string exportXMLFilePath)
         {
+            //先将文件名替换为配置名称
+            string xmlFileName = ConfigData.GetSingle().XmlFileName.Replace("{recorderName}", fileName);
+            exportXMLFilePath = Path.GetDirectoryName(exportXMLFilePath) + xmlFileName;
             fileLogCallback?.Invoke($"xlsx文件开始导出：{xlsxFilePath} -> {exportXMLFilePath}");
 
             int rowCount = xlsxDataRowCollection.Count;
@@ -172,6 +175,9 @@ namespace XlsxToXml
         /// <param name="exportCSFilePath"></param>
         public void ExportCS(string exportCSFilePath)
         {
+            //先将文件名替换为配置名称
+            string csFileName = ConfigData.GetSingle().CSClassFileName.Replace("{recorderName}", fileName);
+            exportCSFilePath = Path.GetDirectoryName(exportCSFilePath) + csFileName;
             fileLogCallback?.Invoke($"xlsx文件开始导出：{xlsxFilePath} -> {exportCSFilePath}");
 
             FileInfo fileInfo = new FileInfo(exportCSFilePath);
@@ -184,7 +190,7 @@ namespace XlsxToXml
             {
                 StringBuilder csClassContent = new StringBuilder(csClassTemplateContent);
                 //替换类名
-                csClassContent.Replace("{className}", fileName);
+                csClassContent.Replace("{recorderName}", fileName);
                 //替换属性模板
                 Dictionary<string, string> propertyTemplateMap = ConfigData.GetSingle().CSClassPropertyTemplateMap;
                 Dictionary<string, string> convertFunctionTemplateMap = ConfigData.GetSingle().ConvertFunctionTemplateMap;

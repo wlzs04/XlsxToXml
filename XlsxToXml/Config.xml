@@ -3,6 +3,8 @@
   <ExportXmlRelativePath>/./</ExportXmlRelativePath>
   <ExportCSRelativePath>/./</ExportCSRelativePath>
   <CSClassTemplateFileRelativePath>/CSClassTemplate.txt</CSClassTemplateFileRelativePath>
+  <XmlFileName>{recorderName}.xml</XmlFileName>
+  <CSClassFileName>{recorderName}Recorder.cs</CSClassFileName>
   <CSClassPropertyTemplateMap>
     <Property>
 <![CDATA[        ///<summary>
@@ -21,7 +23,6 @@
     <string>attributeValue;</string>
     <float>(float)Convert.ToDouble(attributeValue);</float>
     <bool>Convert.ToBoolean(attributeValue);</bool>
-    <enum>({propertyClassName})Enum.Parse(typeof({propertyClassName}), attributeValue);</enum>
     <default>({propertyClassName})HelpManager.ConvertStringToObjectByType(typeof({propertyClassName}),attributeValue);</default>
   </ConvertFunctionTemplateMap>
 </Config>

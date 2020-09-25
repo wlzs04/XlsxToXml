@@ -16,6 +16,8 @@ namespace XlsxToXml
         public string ExportXmlRelativePath { get; set; } = "/../";
         public string ExportCSRelativePath { get; set; } = "/../";
         public string CSClassTemplateFileRelativePath { get; private set; } = "/CSClassTemplate.txt";
+        public string XmlFileName { get; private set; } = "Recorder.xml";
+        public string CSClassFileName { get; private set; } = "Recorder.cs";
         
         public Dictionary<string,string> CSClassPropertyTemplateMap { get; private set; } = new Dictionary<string, string>();
         public Dictionary<string,string> ConvertFunctionTemplateMap { get; private set; } = new Dictionary<string, string>();
@@ -73,6 +75,14 @@ namespace XlsxToXml
                 {
                     CSClassTemplateFileRelativePath = attributeValue;
                 }
+                else if (attributeName == "XmlFileName")
+                {
+                    XmlFileName = attributeValue;
+                }
+                else if (attributeName == "CSClassFileName")
+                {
+                    CSClassFileName = attributeValue;
+                }
                 else if (attributeName == "CSClassPropertyTemplateMap")
                 {
                     CSClassPropertyTemplateMap.Clear();
@@ -113,6 +123,8 @@ namespace XlsxToXml
                     new XElement("ExportXmlRelativePath", ExportXmlRelativePath),
                     new XElement("ExportCSRelativePath", ExportCSRelativePath),
                     new XElement("CSClassTemplateFileRelativePath", CSClassTemplateFileRelativePath),
+                    new XElement("XmlFileName", XmlFileName),
+                    new XElement("CSClassFileName", CSClassFileName),
                     csClassPropertyTemplateMapElement,
                     convertFunctionTemplateMapElement
                 )
