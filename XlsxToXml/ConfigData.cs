@@ -15,6 +15,7 @@ namespace XlsxToXml
         public string ImportXlsxRelativePath { get; set; } = "/../";
         public string ExportXmlRelativePath { get; set; } = "/../";
         public string ExportCSRelativePath { get; set; } = "/../";
+        public string ProjectVersionTool { get; set; } = "git";
         public string CSClassTemplateFileRelativePath { get; private set; } = "/CSClassTemplate.txt";
         public string XmlFileName { get; private set; } = "Recorder.xml";
         public string CSClassFileName { get; private set; } = "Recorder.cs";
@@ -70,6 +71,10 @@ namespace XlsxToXml
                 else if (attributeName == "ExportCSRelativePath")
                 {
                     ExportCSRelativePath = attributeValue;
+                }
+                else if (attributeName == "ProjectVersionTool")
+                {
+                    ProjectVersionTool = attributeValue;
                 }
                 else if (attributeName == "CSClassTemplateFileRelativePath")
                 {

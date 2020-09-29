@@ -18,8 +18,9 @@
                 <Button x:Name="selectImportXlsxRootPathButton" Content="选择路径" HorizontalAlignment="Right" Margin="0,5,5,0" VerticalAlignment="Top" Width="75" Click="SelectImportXlsxRootPathButton_Click"/>
 
                 <TextBlock HorizontalAlignment="Left" Margin="10,30,0,0" Text="需要导出的xlsx文件" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20"/>
-                <Button x:Name="selectFileButton" Content="选择文件" HorizontalAlignment="Right" Margin="0,30,10,0" VerticalAlignment="Top" Width="123" Click="SelectFileButton_Click" Height="30" FontSize="20"/>
-                <ListBox x:Name="fileListBox" Margin="10,70,10,10" PreviewMouseRightButtonDown="FileListBox_PreviewMouseRightButtonDown">
+                <Button x:Name="selectDifferentFileButton" Content="添加差异文件" HorizontalAlignment="Right" Margin="0,30,120,0" VerticalAlignment="Top" Width="130" Click="SelectDifferentFileButton_Click" Height="30" FontSize="20"/>
+                <Button x:Name="selectFileButton" Content="选择文件" HorizontalAlignment="Right" Margin="0,30,10,0" VerticalAlignment="Top" Width="100" Click="SelectFileButton_Click" Height="30" FontSize="20"/>
+                <ListBox x:Name="fileListBox" Margin="10,70,10,10" Drop="FileListBox_Drop" PreviewMouseRightButtonDown="FileListBox_PreviewMouseRightButtonDown" AllowDrop="True">
                     <ListBox.ContextMenu>
                         <ContextMenu/>
                     </ListBox.ContextMenu>

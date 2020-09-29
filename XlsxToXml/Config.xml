@@ -2,6 +2,7 @@
   <ImportXlsxRelativePath>/..\..\..\..\..\YiSiHoliday\Document\Artres\Config\Recorder/</ImportXlsxRelativePath>
   <ExportXmlRelativePath>/./</ExportXmlRelativePath>
   <ExportCSRelativePath>/./</ExportCSRelativePath>
+  <ProjectVersionTool>git</ProjectVersionTool>
   <CSClassTemplateFileRelativePath>/CSClassTemplate.txt</CSClassTemplateFileRelativePath>
   <XmlFileName>{recorderName}.xml</XmlFileName>
   <CSClassFileName>{recorderName}Recorder.cs</CSClassFileName>

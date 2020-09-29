@@ -76,6 +76,36 @@ namespace XlsxToXml
             }
         }
 
+        private void SelectDifferentFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            string differentFileListString = "";
+            if (ConfigData.GetSingle().ProjectVersionTool == "git")
+            {
+                differentFileListString = ProcessHelper.Run("git.exe", importXlsxRootPathTextBox.Text, $"status {importXlsxRootPathTextBox.Text} -s");
+            }
+            else if(ConfigData.GetSingle().ProjectVersionTool == "svn")
+            {
+                differentFileListString = ProcessHelper.Run("svn.exe", importXlsxRootPathTextBox.Text, $"diff --summarize");
+            }
+            if (string.IsNullOrEmpty(differentFileListString))
+            {
+                Log("没有差异文件！");
+            }
+            else
+            {
+                string[] differentFileList = differentFileListString.Split('\n');
+                foreach (string differentFileString in differentFileList)
+                {
+                    string differentFilePath = differentFileString.Trim();
+                    if(differentFilePath.StartsWith('M'))
+                    {
+                        differentFilePath = differentFilePath.Substring(2);
+                        AddFileItemToFileList(differentFilePath);
+                    }
+                }
+            }
+        }
+
         private void SelectFileButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
@@ -85,7 +115,6 @@ namespace XlsxToXml
             fileDialog.InitialDirectory = importXlsxRootPathTextBox.Text;
             if (fileDialog.ShowDialog() == true)
             {
-                fileListBox.Items.Clear();
                 foreach (string filePath in fileDialog.FileNames)
                 {
                     if (filePath.StartsWith(importXlsxRootPathTextBox.Text))
@@ -93,7 +122,7 @@ namespace XlsxToXml
                         string fileRelativePath = System.IO.Path.GetRelativePath(importXlsxRootPathTextBox.Text, filePath);
                         if (!fileRelativePath.Contains("~$"))
                         {
-                            fileListBox.Items.Add(fileRelativePath);
+                            AddFileItemToFileList(fileRelativePath);
                         }
                     }
                     else
@@ -163,6 +192,41 @@ namespace XlsxToXml
             }));
         }
 
+        /// <summary>
+        /// 添加文件到列表中
+        /// </summary>
+        /// <param name="filePath"></param>
+        void AddFileItemToFileList(string filePath)
+        {
+            if (filePath.StartsWith(importXlsxRootPathTextBox.Text))
+            {
+                if(!File.Exists(filePath))
+                {
+                    Log($"选择的文件：{filePath}不存在。");
+                }
+                else if(!filePath.EndsWith(".xlsx"))
+                {
+                    Log($"选择的文件：{filePath}不是xlsx文件。");
+                }
+                else if (filePath.Contains("~$"))
+                {
+                    Log($"选择的文件：{filePath}是~$临时文件。");
+                }
+                else
+                {
+                    string fileRelativePath = System.IO.Path.GetRelativePath(importXlsxRootPathTextBox.Text, filePath);
+                    if (!fileListBox.Items.Contains(fileRelativePath))
+                    {
+                        fileListBox.Items.Add(fileRelativePath);
+                    }
+                }
+            }
+            else
+            {
+                Log($"选择的文件：{filePath}不在xlsx根路径下。");
+            }
+        }
+
         async void GenFile()
         {
             List<string> fileRelaticePathList = new List<string>();
@@ -226,6 +290,38 @@ namespace XlsxToXml
             configData.ExportXmlRelativePath = $"/{System.IO.Path.GetRelativePath(Environment.CurrentDirectory, exportXmlRootPathTextBox.Text)}/";
             configData.ExportCSRelativePath = $"/{System.IO.Path.GetRelativePath(Environment.CurrentDirectory, exportCSRootPathTextBox.Text)}/";
             configData.Save();
+        }
+
+        private void FileListBox_Drop(object sender, DragEventArgs e)
+        {
+            if(e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] fileList = e.Data.GetData(DataFormats.FileDrop) as string[];
+                foreach (string filePath in fileList)
+                {
+                    if(!filePath.StartsWith(importXlsxRootPathTextBox.Text))
+                    {
+                        Log($"选择的文件：{filePath}不在xlsx根路径下。");
+                    }
+                    else if(File.Exists(filePath) && filePath.EndsWith(".xlsx") && !filePath.Contains("~$"))
+                    {
+                        string fileRelativePath = System.IO.Path.GetRelativePath(importXlsxRootPathTextBox.Text, filePath);
+                        AddFileItemToFileList(fileRelativePath);
+                    }
+                    else if(Directory.Exists(filePath))
+                    {
+                        DirectoryInfo directoryInfo = new DirectoryInfo(filePath);
+                        foreach (FileInfo fileInfo in directoryInfo.GetFiles())
+                        {
+                            if(fileInfo.Name.EndsWith(".xlsx") && !fileInfo.Name.Contains("~$"))
+                            {
+                                string fileRelativePath = System.IO.Path.GetRelativePath(importXlsxRootPathTextBox.Text, fileInfo.FullName);
+                                AddFileItemToFileList(fileRelativePath);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
