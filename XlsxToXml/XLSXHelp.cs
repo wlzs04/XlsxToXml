@@ -15,6 +15,22 @@ namespace XlsxToXml
     /// </summary>
     class XLSXFile
     {
+        struct XlsxPropertyClass
+        {
+            /// <summary>
+            /// 属性类型
+            /// </summary>
+            public string classType;
+            /// <summary>
+            /// 属性类名
+            /// </summary>
+            public string className;
+            /// <summary>
+            /// 属性参数
+            /// </summary>
+            public string classParam;
+        }
+
         static Action<string> fileLogCallback = null;
         static string csClassTemplateContent = "";
         string xlsxFilePath = "";
@@ -22,17 +38,17 @@ namespace XlsxToXml
         DataRowCollection xlsxDataRowCollection = null;
 
         /// <summary>
+        /// 需要导出的列
+        /// </summary>
+        List<int> needExportIndexList = new List<int>();
+        /// <summary>
         /// 属性名称
         /// </summary>
         List<string> propertyValueNameList = new List<string>();
         /// <summary>
-        /// 是否需要导出
+        /// 属性类名
         /// </summary>
-        List<bool> needExportList = new List<bool>();
-        /// <summary>
-        /// 类型名称
-        /// </summary>
-        List<string> propertyClassNameList = new List<string>();
+        List<XlsxPropertyClass> propertyClassList = new List<XlsxPropertyClass>();
         /// <summary>
         /// 规则描述，一般为空
         /// </summary>
@@ -81,41 +97,62 @@ namespace XlsxToXml
             xlsxDataRowCollection = result.Tables[0].Rows;
 
             int rowCount = xlsxDataRowCollection.Count;
-            if (rowCount <= 0)
+            int colCount = xlsxDataRowCollection[0].ItemArray.Length;
+            if (rowCount < 5)
             {
-                fileLogCallback?.Invoke($"xlsx文件中没有内容：{xlsxFilePath}");
+                fileLogCallback?.Invoke($"xlsx文件中行数为{rowCount}，小于5，没有正确定义：{xlsxFilePath}");
                 return;
             }
-            else if (xlsxDataRowCollection[1].ItemArray.Length > 100)
+            else if (colCount > 100)
             {
-                fileLogCallback?.Invoke($"xlsx文件中列数太多，超过100，请检查。如果需要扩充请修改代码。");
+                fileLogCallback?.Invoke($"xlsx文件中列数太多，为{colCount}，超过100，请检查。如果需要扩充请修改代码。");
                 return;
             }
-            //xlsx文件格式：第一行，为属性名称
-            foreach (object item in xlsxDataRowCollection[0].ItemArray)
+            //因为在xlsx配置中有可能出现空内容等问题，使属性列比实际要使用的列数多
+            //所以先算出实际使用的列个数
+            //xlsx文件格式：第一行，获得需要导出的列
+            for (int i = 0; i < colCount; i++)
             {
-                propertyValueNameList.Add(item.ToString());
+                object item = xlsxDataRowCollection[0][i];
+                if (item!=DBNull.Value && Convert.ToBoolean(item))
+                {
+                    needExportIndexList.Add(i);
+                }
             }
-            //xlsx文件格式：第二行，是否需要导出
-            foreach (object item in xlsxDataRowCollection[1].ItemArray)
+            foreach (var index in needExportIndexList)
             {
-                bool needExport = Convert.ToBoolean(item);
-                needExportList.Add(needExport);
-            }
-            //xlsx文件格式：第三行，为类型名称
-            foreach (object item in xlsxDataRowCollection[2].ItemArray)
-            {
-                propertyClassNameList.Add(item.ToString());
-            }
-            //xlsx文件格式：第四行，为规则描述，一般为空
-            foreach (object item in xlsxDataRowCollection[3].ItemArray)
-            {
-                propertyDescriptionList.Add(item.ToString());
-            }
-            //xlsx文件格式：第五行，为配置名称，作为属性名称的注释
-            foreach (object item in xlsxDataRowCollection[4].ItemArray)
-            {
-                propertyConfigNameList.Add(item.ToString());
+                //xlsx文件格式：第二行，为属性名称
+                propertyValueNameList.Add(xlsxDataRowCollection[1][index].ToString());
+
+                //xlsx文件格式：第三行，为类型名称
+                string propertyClassString = xlsxDataRowCollection[2][index].ToString();
+                XlsxPropertyClass propertyClass = new XlsxPropertyClass();
+                if (propertyClassString.Contains(' '))
+                {
+                    string[] propertyClassList = propertyClassString.Split(' ');
+                    propertyClass.classType = propertyClassList[0];
+                    if (propertyClassList.Length > 1)
+                    {
+                        propertyClass.className = propertyClassList[1];
+                    }
+                    if (propertyClassList.Length > 2)
+                    {
+                        propertyClass.classParam = propertyClassList[2];
+                    }
+                }
+                else
+                {
+                    propertyClass.classType = propertyClassString;
+                    propertyClass.className = propertyClassString;
+                    propertyClass.classParam = "";
+                }
+                propertyClassList.Add(propertyClass);
+
+                //xlsx文件格式：第四行，为规则描述，一般为空
+                propertyDescriptionList.Add(xlsxDataRowCollection[3][index].ToString());
+
+                //xlsx文件格式：第五行，为配置名称，作为属性名称的注释
+                propertyConfigNameList.Add(xlsxDataRowCollection[4][index].ToString());
             }
         }
 
@@ -127,7 +164,7 @@ namespace XlsxToXml
         {
             //先将文件名替换为配置名称
             string xmlFileName = ConfigData.GetSingle().XmlFileName.Replace("{recorderName}", fileName);
-            exportXMLFilePath = Path.GetDirectoryName(exportXMLFilePath) + xmlFileName;
+            exportXMLFilePath = Path.GetDirectoryName(exportXMLFilePath) + "/" + xmlFileName;
             fileLogCallback?.Invoke($"xlsx文件开始导出：{xlsxFilePath} -> {exportXMLFilePath}");
 
             int rowCount = xlsxDataRowCollection.Count;
@@ -135,18 +172,10 @@ namespace XlsxToXml
             for (int rowIndex = 5; rowIndex < rowCount; rowIndex++)
             {
                 object[] itemArray = xlsxDataRowCollection[rowIndex].ItemArray;
-                //有的文件会出现某一行内容为空的情况
-                if (itemArray[0].ToString() == "")
-                {
-                    continue;
-                }
                 XElement recordNode = new XElement("Recorder");
-                for (int i = 0; i < itemArray.Length; i++)
+                for (int i = 0; i < needExportIndexList.Count; i++)
                 {
-                    if (needExportList[i])
-                    {
-                        recordNode.Add(new XAttribute(propertyValueNameList[i], itemArray[i]));
-                    }
+                    recordNode.Add(new XAttribute(propertyValueNameList[i], itemArray[needExportIndexList[i]]));
                 }
                 doc.Root.Add(recordNode);
             }
@@ -177,7 +206,7 @@ namespace XlsxToXml
         {
             //先将文件名替换为配置名称
             string csFileName = ConfigData.GetSingle().CSClassFileName.Replace("{recorderName}", fileName);
-            exportCSFilePath = Path.GetDirectoryName(exportCSFilePath) + csFileName;
+            exportCSFilePath = Path.GetDirectoryName(exportCSFilePath) + "/" + csFileName;
             fileLogCallback?.Invoke($"xlsx文件开始导出：{xlsxFilePath} -> {exportCSFilePath}");
 
             FileInfo fileInfo = new FileInfo(exportCSFilePath);
@@ -193,7 +222,6 @@ namespace XlsxToXml
                 csClassContent.Replace("{recorderName}", fileName);
                 //替换属性模板
                 Dictionary<string, string> propertyTemplateMap = ConfigData.GetSingle().CSClassPropertyTemplateMap;
-                Dictionary<string, string> convertFunctionTemplateMap = ConfigData.GetSingle().ConvertFunctionTemplateMap;
                 foreach (var property in propertyTemplateMap)
                 {
                     StringBuilder propertyTotalContent = new StringBuilder();
@@ -201,17 +229,28 @@ namespace XlsxToXml
                     {
                         StringBuilder propertyEveryContent = new StringBuilder(property.Value);
                         //根据类型替换转换方法模板
-                        if(convertFunctionTemplateMap.ContainsKey(propertyClassNameList[i]))
+                        propertyEveryContent.Replace("{convertFunction}", GetConvertFunctionByClassType(propertyClassList[i].classType));
+                        if (propertyClassList[i].classType=="map")
                         {
-                            propertyEveryContent.Replace("{convertFunction}", convertFunctionTemplateMap[propertyClassNameList[i]]);
+                            string[] propertyClassNameList = propertyClassList[i].className.Split(',');
+                            string propertyClassParam1 = propertyClassList[i].classParam[0].ToString();
+                            string propertyClassParam2 = propertyClassList[i].classParam[1].ToString();
+                            propertyEveryContent.Replace("{propertyClassName1}", propertyClassNameList[0]);
+                            propertyEveryContent.Replace("{propertyClassName2}", propertyClassNameList[1]);
+                            propertyEveryContent.Replace("{propertyClassParam1}", propertyClassParam1);
+                            propertyEveryContent.Replace("{propertyClassParam2}", propertyClassParam2);
+                            propertyEveryContent.Replace("{convertFunction1}", GetConvertFunctionByClassType(propertyClassNameList[0]));
+                            propertyEveryContent.Replace("{convertFunction2}", GetConvertFunctionByClassType(propertyClassNameList[1]));
                         }
                         else
                         {
-                            propertyEveryContent.Replace("{convertFunction}", convertFunctionTemplateMap["default"]);
+                            propertyEveryContent.Replace("{convertFunction}", GetConvertFunctionByClassType(propertyClassList[i].className));
+                            propertyEveryContent.Replace("{propertyClassParam}", propertyClassList[i].classParam);
                         }
+
                         propertyEveryContent.Replace("{propertyConfigName}",propertyConfigNameList[i]);
                         propertyEveryContent.Replace("{propertyDescription}", propertyDescriptionList[i]);
-                        propertyEveryContent.Replace("{propertyClassName}", propertyClassNameList[i]);
+                        propertyEveryContent.Replace("{propertyClassName}", propertyClassList[i].className);
                         propertyEveryContent.Replace("{propertyValueName}", propertyValueNameList[i]);
                         propertyTotalContent.Append(propertyEveryContent.ToString());
                         if (i != propertyValueNameList.Count-1)
@@ -223,6 +262,22 @@ namespace XlsxToXml
                 }
                 streamWriter.WriteLine(csClassContent.ToString());
                 streamWriter.Flush();
+            }
+        }
+
+        /// <summary>
+        /// 通过类型获得转换方法
+        /// </summary>
+        /// <param name="classType"></param>
+        string GetConvertFunctionByClassType(string classType)
+        {
+            if(ConfigData.GetSingle().ConvertFunctionTemplateMap.ContainsKey(classType))
+            {
+                return ConfigData.GetSingle().ConvertFunctionTemplateMap[classType];
+            }
+            else
+            {
+                return ConfigData.GetSingle().ConvertFunctionTemplateMap["custom"];
             }
         }
     }

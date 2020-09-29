@@ -107,28 +107,19 @@ namespace XlsxToXml
         /// </summary>
         public void Save()
         {
-            XElement csClassPropertyTemplateMapElement = new XElement("CSClassPropertyTemplateMap");
-            foreach (var item in CSClassPropertyTemplateMap)
+            if (!File.Exists(configPath))
             {
-                csClassPropertyTemplateMapElement.Add(new XElement(item.Key, new XCData(item.Value)));
+                return;
             }
-            XElement convertFunctionTemplateMapElement = new XElement("ConvertFunctionTemplateMap");
-            foreach (var item in ConvertFunctionTemplateMap)
+            XDocument doc = XDocument.Load(configPath);
+            if (doc == null)
             {
-                convertFunctionTemplateMapElement.Add(new XElement(item.Key, new XCData(item.Value)));
+                return;
             }
-            XDocument doc = new XDocument(
-                new XElement("Config",
-                    new XElement("ImportXlsxRelativePath", ImportXlsxRelativePath),
-                    new XElement("ExportXmlRelativePath", ExportXmlRelativePath),
-                    new XElement("ExportCSRelativePath", ExportCSRelativePath),
-                    new XElement("CSClassTemplateFileRelativePath", CSClassTemplateFileRelativePath),
-                    new XElement("XmlFileName", XmlFileName),
-                    new XElement("CSClassFileName", CSClassFileName),
-                    csClassPropertyTemplateMapElement,
-                    convertFunctionTemplateMapElement
-                )
-            );
+            doc.Root.Element("ImportXlsxRelativePath").Value = ImportXlsxRelativePath;
+            doc.Root.Element("ExportXmlRelativePath").Value = ExportXmlRelativePath;
+            doc.Root.Element("ExportCSRelativePath").Value = ExportCSRelativePath;
+            
             //保存时忽略声明
             XmlWriterSettings xws = new XmlWriterSettings();
             xws.OmitXmlDeclaration = true;
