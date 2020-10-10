@@ -100,7 +100,7 @@ namespace XlsxToXml
                     if(differentFilePath.StartsWith('M'))
                     {
                         differentFilePath = differentFilePath.Substring(2);
-                        AddFileItemToFileList(differentFilePath);
+                        AddFileToFileList(importXlsxRootPathTextBox.Text+"/"+differentFilePath);
                     }
                 }
             }
@@ -117,18 +117,7 @@ namespace XlsxToXml
             {
                 foreach (string filePath in fileDialog.FileNames)
                 {
-                    if (filePath.StartsWith(importXlsxRootPathTextBox.Text))
-                    {
-                        string fileRelativePath = System.IO.Path.GetRelativePath(importXlsxRootPathTextBox.Text, filePath);
-                        if (!fileRelativePath.Contains("~$"))
-                        {
-                            AddFileItemToFileList(fileRelativePath);
-                        }
-                    }
-                    else
-                    {
-                        Log($"选择的文件：{filePath}不在xlsx根路径下。");
-                    }
+                    AddFileToFileList(filePath);
                 }
             }
         }
@@ -193,10 +182,30 @@ namespace XlsxToXml
         }
 
         /// <summary>
+        /// 添加文件夹到列表中
+        /// </summary>
+        /// <param name="directoryPath"></param>
+        void AddDirectoryToFileList(string directoryPath)
+        {
+            if (Directory.Exists(directoryPath))
+            {
+                DirectoryInfo directoryInfo = new DirectoryInfo(directoryPath);
+                foreach (FileInfo fileInfo in directoryInfo.GetFiles())
+                {
+                    AddFileToFileList(fileInfo.FullName);
+                }
+                foreach (DirectoryInfo childDirectoryInfo in directoryInfo.GetDirectories())
+                {
+                    AddDirectoryToFileList(childDirectoryInfo.FullName);
+                }
+            }
+        }
+
+        /// <summary>
         /// 添加文件到列表中
         /// </summary>
         /// <param name="filePath"></param>
-        void AddFileItemToFileList(string filePath)
+        void AddFileToFileList(string filePath)
         {
             if (filePath.StartsWith(importXlsxRootPathTextBox.Text))
             {
@@ -299,26 +308,13 @@ namespace XlsxToXml
                 string[] fileList = e.Data.GetData(DataFormats.FileDrop) as string[];
                 foreach (string filePath in fileList)
                 {
-                    if(!filePath.StartsWith(importXlsxRootPathTextBox.Text))
+                    if (Directory.Exists(filePath))
                     {
-                        Log($"选择的文件：{filePath}不在xlsx根路径下。");
+                        AddDirectoryToFileList(filePath);
                     }
-                    else if(File.Exists(filePath) && filePath.EndsWith(".xlsx") && !filePath.Contains("~$"))
+                    else
                     {
-                        string fileRelativePath = System.IO.Path.GetRelativePath(importXlsxRootPathTextBox.Text, filePath);
-                        AddFileItemToFileList(fileRelativePath);
-                    }
-                    else if(Directory.Exists(filePath))
-                    {
-                        DirectoryInfo directoryInfo = new DirectoryInfo(filePath);
-                        foreach (FileInfo fileInfo in directoryInfo.GetFiles())
-                        {
-                            if(fileInfo.Name.EndsWith(".xlsx") && !fileInfo.Name.Contains("~$"))
-                            {
-                                string fileRelativePath = System.IO.Path.GetRelativePath(importXlsxRootPathTextBox.Text, fileInfo.FullName);
-                                AddFileItemToFileList(fileRelativePath);
-                            }
-                        }
+                        AddFileToFileList(filePath);
                     }
                 }
             }
