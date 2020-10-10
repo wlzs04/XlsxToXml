@@ -129,6 +129,7 @@ namespace XlsxToXml
             XmlWriterSettings xws = new XmlWriterSettings();
             xws.OmitXmlDeclaration = true;
             xws.Indent = true;
+            xws.NewLineChars = "\n";
             FileStream fileStream = new FileStream(configPath, FileMode.Create, FileAccess.ReadWrite);
             using (XmlWriter xmlWriter = XmlWriter.Create(fileStream, xws))
             {
