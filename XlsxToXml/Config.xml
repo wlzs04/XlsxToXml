@@ -7,17 +7,13 @@
   <XmlFileName>{recorderName}.xml</XmlFileName>
   <CSClassFileName>{recorderName}Recorder.cs</CSClassFileName>
   <CSClassPropertyTemplateMap>
-    <Property>
-<![CDATA[        ///<summary>
+    <Property><![CDATA[        ///<summary>
         /// {propertyConfigName} {propertyDescription}
         ///<summary>
-        public {propertyClassName} {propertyValueName} { get; private set; }]]>
-      </Property>
-    <LoadFunction>
-<![CDATA[                    case "{propertyValueName}":
-                    {propertyValueName} = {convertFunction}
-                    break;]]>
-    </LoadFunction>
+        public {propertyClassName} {propertyValueName} { get; private set; }]]></Property>
+    <LoadFunction><![CDATA[                    case "{propertyValueName}":
+                        {propertyValueName} = {convertFunction}
+                        break;]]></LoadFunction>
   </CSClassPropertyTemplateMap>
   <ConvertFunctionTemplateMap>
     <int>Convert.ToInt32(attributeValue);</int>
@@ -25,26 +21,22 @@
     <float>(float)Convert.ToDouble(attributeValue);</float>
     <bool>Convert.ToBoolean(attributeValue);</bool>
     <Vector3>Vector3.Parse(attributeValue);</Vector3>
-    <list>
-      <![CDATA[new List<{propertyClassName}>();
-					string[] valueList =  attributeValue.Split('{propertyClassParam}');
-					foreach (string valueString : valueList)
-					{
-						{propertyClassName} propertyValue = {convertFunction}
-						{propertyValueName}.Add(propertyValue);
-					}]]>
-    </list>
-    <map>
-      <![CDATA[new Dictionary<{propertyClassName}>();
-					string[] pairList =  attributeValue.Split('{propertyClassParam1}');
-					foreach (string pair : pairList)
-					{
-						string[] keyValueList =  pair.Split('{propertyClassParam2}');
-						{propertyClassName1} propertyKey = {convertFunction1}
-						{propertyClassName2} propertyValue = {convertFunction2}
-						{propertyValueName}.Add(propertyKey,propertyValue);
-					}]]>
-    </map>
+    <list><![CDATA[new List<{propertyClassName}>();
+					    string[] valueList =  attributeValue.Split('{propertyClassParam}');
+					    foreach (string valueString : valueList)
+					    {
+						    {propertyClassName} propertyValue = {convertFunction}
+						    {propertyValueName}.Add(propertyValue);
+					    }]]></list>
+    <map><![CDATA[new Dictionary<{propertyClassName}>();
+					    string[] pairList =  attributeValue.Split('{propertyClassParam1}');
+					    foreach (string pair : pairList)
+					    {
+						    string[] keyValueList =  pair.Split('{propertyClassParam2}');
+						    {propertyClassName1} propertyKey = {convertFunction1}
+						    {propertyClassName2} propertyValue = {convertFunction2}
+						    {propertyValueName}.Add(propertyKey,propertyValue);
+					    }]]></map>
     <custom>({propertyClassName})HelpManager.ConvertStringToObjectByType(typeof({propertyClassName}),attributeValue);</custom>
   </ConvertFunctionTemplateMap>
 </Config>
