@@ -1,7 +1,7 @@
 <Config>
-  <ImportXlsxRelativePath>/..\..\..\..\..\YiSiHoliday\Document\Artres\Config\Recorder/</ImportXlsxRelativePath>
-  <ExportXmlRelativePath>/./</ExportXmlRelativePath>
-  <ExportCSRelativePath>/./</ExportCSRelativePath>
+  <ImportXlsxRelativePath>/..\..\..\..\..\YiSiHoliday\Document\Artres\Config\Recorder\/</ImportXlsxRelativePath>
+  <ExportXmlRelativePath>/..\..\..\..\..\YiSiHoliday\Assets\Artres\Config\Recorder/</ExportXmlRelativePath>
+  <ExportCSRelativePath>/..\..\..\..\..\YiSiHoliday\Assets\Script\Config\Recorder/</ExportCSRelativePath>
   <ProjectVersionTool>git</ProjectVersionTool>
   <CSClassTemplateFileRelativePath>/CSClassTemplate.txt</CSClassTemplateFileRelativePath>
   <XmlFileName>{recorderName}.xml</XmlFileName>
@@ -20,23 +20,22 @@
     <string>attributeValue;</string>
     <float>(float)Convert.ToDouble(attributeValue);</float>
     <bool>Convert.ToBoolean(attributeValue);</bool>
-    <Vector3>Vector3.Parse(attributeValue);</Vector3>
-    <list><![CDATA[new List<{propertyClassName}>();
-					    string[] valueList =  attributeValue.Split('{propertyClassParam}');
-					    foreach (string valueString : valueList)
-					    {
-						    {propertyClassName} propertyValue = {convertFunction}
-						    {propertyValueName}.Add(propertyValue);
-					    }]]></list>
-    <map><![CDATA[new Dictionary<{propertyClassName}>();
-					    string[] pairList =  attributeValue.Split('{propertyClassParam1}');
-					    foreach (string pair : pairList)
-					    {
-						    string[] keyValueList =  pair.Split('{propertyClassParam2}');
-						    {propertyClassName1} propertyKey = {convertFunction1}
-						    {propertyClassName2} propertyValue = {convertFunction2}
-						    {propertyValueName}.Add(propertyKey,propertyValue);
-					    }]]></map>
-    <custom>({propertyClassName})HelpManager.ConvertStringToObjectByType(typeof({propertyClassName}),attributeValue);</custom>
+    <list><![CDATA[new {propertyClassName}();
+                        string[] valueList =  attributeValue.Split('{propertyClassParam1}');
+                        foreach (string valueString in valueList)
+                        {
+                            {propertyClassName1} propertyValue = {convertFunction1}
+                            {propertyValueName}.Add(propertyValue);
+                        }]]></list>
+    <map><![CDATA[new {propertyClassName}();
+                        string[] pairList =  attributeValue.Split('{propertyClassParam1}');
+                        foreach (string pair in pairList)
+                        {
+                            string[] keyValueList =  pair.Split('{propertyClassParam2}');
+                            {propertyClassName1} propertyKey = {convertFunction1}
+                            {propertyClassName2} propertyValue = {convertFunction2}
+                            {propertyValueName}.Add(propertyKey,propertyValue);
+                        }]]></map>
+    <custom>({propertyClassName})Assets.Script.Manager.HelpManager.ConvertStringToObjectByType(typeof({propertyClassName}),attributeValue);</custom>
   </ConvertFunctionTemplateMap>
 </Config>

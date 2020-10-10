@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
@@ -36,7 +35,6 @@ namespace XlsxToXml
         string xlsxFilePath = "";
         string fileName = "";
         DataRowCollection xlsxDataRowCollection = null;
-
         /// <summary>
         /// 需要导出的列
         /// </summary>
@@ -239,28 +237,33 @@ namespace XlsxToXml
                             propertyEveryContent.Replace("{propertyClassName2}", propertyClassNameList[1]);
                             propertyEveryContent.Replace("{propertyClassParam1}", propertyClassParam1);
                             propertyEveryContent.Replace("{propertyClassParam2}", propertyClassParam2);
-                            propertyEveryContent.Replace("{convertFunction1}", GetConvertFunctionByClassType(propertyClassNameList[0]));
-                            propertyEveryContent.Replace("{convertFunction2}", GetConvertFunctionByClassType(propertyClassNameList[1]));
+                            propertyEveryContent.Replace("{convertFunction1}", GetConvertFunctionByClassType(propertyClassNameList[0]).Replace("{propertyClassName}", propertyClassNameList[0]));
+                            propertyEveryContent.Replace("{convertFunction2}", GetConvertFunctionByClassType(propertyClassNameList[1]).Replace("{propertyClassName}", propertyClassNameList[1]));
+                            propertyEveryContent.Replace("{propertyClassName}", $"Dictionary<{propertyClassList[i].className}>");
+                        }
+                        else if(propertyClassList[i].classType == "list")
+                        {
+                            propertyEveryContent.Replace("{propertyClassParam1}", propertyClassList[i].classParam);
+                            propertyEveryContent.Replace("{convertFunction1}", GetConvertFunctionByClassType(propertyClassList[i].className).Replace("{propertyClassName}", propertyClassList[i].className));
+                            propertyEveryContent.Replace("{propertyClassName1}", propertyClassList[i].className);
+                            propertyEveryContent.Replace("{propertyClassName}", $"List<{propertyClassList[i].className}>");
                         }
                         else
                         {
-                            propertyEveryContent.Replace("{convertFunction}", GetConvertFunctionByClassType(propertyClassList[i].className));
-                            propertyEveryContent.Replace("{propertyClassParam}", propertyClassList[i].classParam);
+                            propertyEveryContent.Replace("{propertyClassName}", propertyClassList[i].className);
                         }
-
                         propertyEveryContent.Replace("{propertyConfigName}",propertyConfigNameList[i]);
                         propertyEveryContent.Replace("{propertyDescription}", propertyDescriptionList[i]);
-                        propertyEveryContent.Replace("{propertyClassName}", propertyClassList[i].className);
                         propertyEveryContent.Replace("{propertyValueName}", propertyValueNameList[i]);
                         propertyTotalContent.Append(propertyEveryContent.ToString());
                         if (i != propertyValueNameList.Count-1)
                         {
-                            propertyTotalContent.AppendLine();
+                            propertyTotalContent.Append('\n');
                         }
                     }
                     csClassContent.Replace($"{{{property.Key}}}", propertyTotalContent.ToString());
                 }
-                streamWriter.WriteLine(csClassContent.ToString());
+                streamWriter.Write(csClassContent.ToString());
                 streamWriter.Flush();
             }
         }
