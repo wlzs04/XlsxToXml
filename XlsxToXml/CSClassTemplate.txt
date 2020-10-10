@@ -7,7 +7,7 @@ namespace Assets.Script.Config.Recorder
     /// <summary>
     /// 配置
     /// </summary>
-    class {recorderName} : RecorderBase
+    class {recorderName}Recorder : RecorderBase
     {
 {Property}
 
