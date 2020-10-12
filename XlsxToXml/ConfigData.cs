@@ -15,6 +15,8 @@ namespace XlsxToXml
         public string ImportXlsxRelativePath { get; set; } = "/../";
         public string ExportXmlRelativePath { get; set; } = "/../";
         public string ExportCSRelativePath { get; set; } = "/../";
+        public string ExportCSAbsolutePath { get; set; } = "/../";
+        
         public string ProjectVersionTool { get; set; } = "git";
         public string CSRecorderTemplateFileRelativePath { get; private set; } = "/CSRecorderTemplate.txt";
         public string CSEnumTemplateFileRelativePath { get; private set; } = "/CSEnumTemplate.txt";

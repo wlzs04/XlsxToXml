@@ -51,7 +51,8 @@ namespace XlsxToXml
             importXlsxRootPathTextBox.Text = System.IO.Path.GetFullPath(Environment.CurrentDirectory + configData.ImportXlsxRelativePath);
             exportXmlRootPathTextBox.Text = System.IO.Path.GetFullPath(Environment.CurrentDirectory + configData.ExportXmlRelativePath);
             exportCSRootPathTextBox.Text = System.IO.Path.GetFullPath(Environment.CurrentDirectory + configData.ExportCSRelativePath);
-            if(File.Exists(Environment.CurrentDirectory + configData.CSRecorderTemplateFileRelativePath))
+            configData.ExportCSAbsolutePath = exportCSRootPathTextBox.Text;
+            if (File.Exists(Environment.CurrentDirectory + configData.CSRecorderTemplateFileRelativePath))
             {
                 using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + configData.CSRecorderTemplateFileRelativePath))
                 {
@@ -159,6 +160,7 @@ namespace XlsxToXml
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 exportCSRootPathTextBox.Text = dialog.FileName;
+                configData.ExportCSAbsolutePath = exportCSRootPathTextBox.Text;
                 configData.ExportCSRelativePath = $"/{System.IO.Path.GetRelativePath(Environment.CurrentDirectory, exportCSRootPathTextBox.Text)}/";
             }
         }

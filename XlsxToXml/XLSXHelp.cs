@@ -286,7 +286,7 @@ namespace XlsxToXml
                 //替换类名
                 csClassContent.Replace("{fileName}", fileName);
                 //替换命名空间
-                string namespaceString = Path.GetRelativePath(ConfigData.GetSingle().ExportCSRelativePath, fileInfo.Directory.FullName);
+                string namespaceString = Path.GetRelativePath(ConfigData.GetSingle().ExportCSAbsolutePath, fileInfo.Directory.FullName);
                 if(namespaceString!=".")
                 {
                     namespaceString = "."+namespaceString.Replace("\\",".");
