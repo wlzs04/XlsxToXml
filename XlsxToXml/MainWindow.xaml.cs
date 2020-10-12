@@ -51,16 +51,27 @@ namespace XlsxToXml
             importXlsxRootPathTextBox.Text = System.IO.Path.GetFullPath(Environment.CurrentDirectory + configData.ImportXlsxRelativePath);
             exportXmlRootPathTextBox.Text = System.IO.Path.GetFullPath(Environment.CurrentDirectory + configData.ExportXmlRelativePath);
             exportCSRootPathTextBox.Text = System.IO.Path.GetFullPath(Environment.CurrentDirectory + configData.ExportCSRelativePath);
-            if(File.Exists(Environment.CurrentDirectory + configData.CSClassTemplateFileRelativePath))
+            if(File.Exists(Environment.CurrentDirectory + configData.CSRecorderTemplateFileRelativePath))
             {
-                using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + configData.CSClassTemplateFileRelativePath))
+                using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + configData.CSRecorderTemplateFileRelativePath))
                 {
-                    XLSXFile.SetCSClassTemplateContent(streamReader.ReadToEnd());
+                    XLSXFile.SetCSRecorderTemplateContent(streamReader.ReadToEnd());
                 }
             }
             else
             {
-                Log("缺少CSClass模板！");
+                Log("缺少CSRecorder模板！");
+            }
+            if (File.Exists(Environment.CurrentDirectory + configData.CSEnumTemplateFileRelativePath))
+            {
+                using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + configData.CSEnumTemplateFileRelativePath))
+                {
+                    XLSXFile.SetCSEnumTemplateContent(streamReader.ReadToEnd());
+                }
+            }
+            else
+            {
+                Log("缺少CSEnum模板！");
             }
         }
 
@@ -72,6 +83,7 @@ namespace XlsxToXml
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 importXlsxRootPathTextBox.Text = dialog.FileName;
+                configData.ImportXlsxRelativePath = $"/{System.IO.Path.GetRelativePath(Environment.CurrentDirectory, importXlsxRootPathTextBox.Text)}/";
                 fileListBox.Items.Clear();
             }
         }
@@ -122,6 +134,11 @@ namespace XlsxToXml
             }
         }
 
+        private void SelectAllFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddDirectoryToFileList(importXlsxRootPathTextBox.Text);
+        }
+
         private void SelectExportXmlRootPathButton_Click(object sender, RoutedEventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
@@ -130,6 +147,7 @@ namespace XlsxToXml
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 exportXmlRootPathTextBox.Text = dialog.FileName;
+                configData.ExportXmlRelativePath = $"/{System.IO.Path.GetRelativePath(Environment.CurrentDirectory, exportXmlRootPathTextBox.Text)}/";
             }
         }
 
@@ -141,6 +159,7 @@ namespace XlsxToXml
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 exportCSRootPathTextBox.Text = dialog.FileName;
+                configData.ExportCSRelativePath = $"/{System.IO.Path.GetRelativePath(Environment.CurrentDirectory, exportCSRootPathTextBox.Text)}/";
             }
         }
 
@@ -290,14 +309,12 @@ namespace XlsxToXml
                     }
                 }
                 Log($"生成文件结束！");
+                MessageBox.Show("生成文件结束！");
             });
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            configData.ImportXlsxRelativePath = $"/{System.IO.Path.GetRelativePath(Environment.CurrentDirectory, importXlsxRootPathTextBox.Text)}/";
-            configData.ExportXmlRelativePath = $"/{System.IO.Path.GetRelativePath(Environment.CurrentDirectory, exportXmlRootPathTextBox.Text)}/";
-            configData.ExportCSRelativePath = $"/{System.IO.Path.GetRelativePath(Environment.CurrentDirectory, exportCSRootPathTextBox.Text)}/";
             configData.Save();
         }
 

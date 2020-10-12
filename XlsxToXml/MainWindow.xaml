@@ -13,14 +13,15 @@
         </Grid.ColumnDefinitions>
         <Border Grid.Column="0" Margin="10,10,10,10" CornerRadius="5,5,5,5" BorderThickness="2,2,2,2" Background="#FF939090" BorderBrush="#FF685B5B">
             <Grid HorizontalAlignment="Stretch" Margin="10,10,10,10">
-                <TextBlock HorizontalAlignment="Left" Margin="5,20,0,0" Text="xlsx根路径：" TextWrapping="Wrap" VerticalAlignment="Top" Width="75"/>
+                <TextBlock HorizontalAlignment="Left" Margin="0,20,0,0" Text="xlsx根路径：" TextWrapping="Wrap" VerticalAlignment="Top" Width="75"/>
                 <TextBox x:Name="importXlsxRootPathTextBox" HorizontalAlignment="Stretch" Margin="80,20,80,0" TextWrapping="NoWrap" VerticalAlignment="Top" TextChanged="ImportXlsxRootPathTextBox_TextChanged" IsReadOnly="True"/>
-                <Button x:Name="selectImportXlsxRootPathButton" Content="选择路径" HorizontalAlignment="Right" Margin="0,20,5,0" VerticalAlignment="Top" Width="75" Click="SelectImportXlsxRootPathButton_Click"/>
+                <Button x:Name="selectImportXlsxRootPathButton" Content="选择路径" HorizontalAlignment="Right" Margin="0,20,0,0" VerticalAlignment="Top" Width="75" Click="SelectImportXlsxRootPathButton_Click"/>
 
-                <TextBlock HorizontalAlignment="Left" Margin="10,60,0,0" Text="需要导出的xlsx文件" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20"/>
-                <Button x:Name="selectDifferentFileButton" Content="添加差异文件" HorizontalAlignment="Right" Margin="0,60,120,0" VerticalAlignment="Top" Width="130" Click="SelectDifferentFileButton_Click" Height="30" FontSize="20"/>
-                <Button x:Name="selectFileButton" Content="选择文件" HorizontalAlignment="Right" Margin="0,60,10,0" VerticalAlignment="Top" Width="100" Click="SelectFileButton_Click" Height="30" FontSize="20"/>
-                <ListBox x:Name="fileListBox" Margin="10,100,10,10" Drop="FileListBox_Drop" PreviewMouseRightButtonDown="FileListBox_PreviewMouseRightButtonDown" AllowDrop="True">
+                <TextBlock HorizontalAlignment="Left" Margin="0,60,0,0" Text="需要导出的xlsx文件" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="16"/>
+                <Button x:Name="selectDifferentFileButton" Content="添加差异文件" HorizontalAlignment="Right" Margin="0,60,110,0" VerticalAlignment="Top" Width="100" Click="SelectDifferentFileButton_Click" Height="22" FontSize="16"/>
+                <Button x:Name="selectFileButton" Content="选择文件" HorizontalAlignment="Right" Margin="0,60,220,0" VerticalAlignment="Top" Width="80" Click="SelectFileButton_Click" Height="22" FontSize="16"/>
+                <Button x:Name="selectAllFileButton" Content="选择所有文件" HorizontalAlignment="Right" Margin="0,60,0,0" VerticalAlignment="Top" Width="100" Click="SelectAllFileButton_Click" Height="22" FontSize="16"/>
+                <ListBox x:Name="fileListBox" Margin="0,100,0,0" Drop="FileListBox_Drop" PreviewMouseRightButtonDown="FileListBox_PreviewMouseRightButtonDown" AllowDrop="True">
                     <ListBox.ContextMenu>
                         <ContextMenu/>
                     </ListBox.ContextMenu>
@@ -30,17 +31,17 @@
         <Border Grid.Column="1" Margin="10,10,10,10" CornerRadius="5,5,5,5" BorderThickness="2,2,2,2" Background="#FF939090" BorderBrush="#FF685B5B" VerticalAlignment="Stretch">
             <Grid Margin="10,10,10,10">
                 <CheckBox x:Name="needGenXmlFileCheckBox" Content="生成xml文件" Margin="0,5,0,0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsChecked="True"/>
-                <TextBlock HorizontalAlignment="Left" Margin="5,47,0,0" Text="xml根路径：" TextWrapping="Wrap" VerticalAlignment="Top" Width="75"/>
+                <TextBlock HorizontalAlignment="Left" Margin="0,47,0,0" Text="xml根路径：" TextWrapping="Wrap" VerticalAlignment="Top" Width="75"/>
                 <TextBox x:Name="exportXmlRootPathTextBox" Margin="80,47,80,0" TextWrapping="NoWrap" VerticalAlignment="Top" IsReadOnly="True"/>
-                <Button x:Name="selectExportXmlRootPathButton" Content="选择路径" HorizontalAlignment="Right" Margin="0,47,5,0" VerticalAlignment="Top" Width="75" Click="SelectExportXmlRootPathButton_Click"/>
+                <Button x:Name="selectExportXmlRootPathButton" Content="选择路径" HorizontalAlignment="Right" Margin="0,47,0,0" VerticalAlignment="Top" Width="75" Click="SelectExportXmlRootPathButton_Click"/>
                 <CheckBox x:Name="needGenCSFileCheckBox" Content="生成C#文件" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsChecked="True" Margin="0,102,0,0"/>
-                <TextBlock HorizontalAlignment="Left" Margin="5,147,0,0" Text="C#根路径：" TextWrapping="Wrap" VerticalAlignment="Top" Width="75"/>
+                <TextBlock HorizontalAlignment="Left" Margin="0,147,0,0" Text="C#根路径：" TextWrapping="Wrap" VerticalAlignment="Top" Width="75"/>
                 <TextBox x:Name="exportCSRootPathTextBox" Margin="80,147,80,0" TextWrapping="NoWrap" VerticalAlignment="Top" IsReadOnly="True"/>
-                <Button x:Name="selectExportCSRootPathButton" Content="选择路径" HorizontalAlignment="Right" Margin="0,147,5,0" VerticalAlignment="Top" Width="75" Click="SelectExportCSRootPathButton_Click"/>
+                <Button x:Name="selectExportCSRootPathButton" Content="选择路径" HorizontalAlignment="Right" Margin="0,147,0,0" VerticalAlignment="Top" Width="75" Click="SelectExportCSRootPathButton_Click"/>
                 <Button x:Name="genFileButton" Content="生成" HorizontalAlignment="Center" Margin="0,180,0,0" VerticalAlignment="Top" Height="50" Width="150" FontSize="20" Click="GenFileButton_Click"/>
 
                 <TextBlock HorizontalAlignment="Center" Margin="0,250,0,0" Text="日志" TextWrapping="Wrap" VerticalAlignment="Top" Width="75" FontSize="20" TextAlignment="Center"/>
-                <TextBox x:Name="logTextBox" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,280,10,10" TextWrapping="Wrap"/>
+                <TextBox x:Name="logTextBox" Grid.Column="1" HorizontalAlignment="Stretch" Margin="0,280,0,0" TextWrapping="Wrap"/>
             </Grid>
         </Border>
     </Grid>

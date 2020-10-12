@@ -15,17 +15,23 @@ CSClassPropertyTemplateMap 属类性模板map，在C#模板类文件中对应位
 ConvertFunctionTemplateMap 根据类型进行转换方法模板map，配置中的字符串会直接替换到{convertFunction}中。
 
 模板类文件和配置中可使用的参数
-{recorderName}，配置文件名称，对应.xlsx文件的名称
-{propertyValueName}，配置属性名称，对应.xlsx文件的第2行
+{namespace}，命名空间，对应.cs文件根路径的相对路径
+{fileName}，配置文件名称，对应.xlsx文件的名称
+{propertyValueName}，配置属性名称，对应????Recorder.xlsx文件的第2行，????Enum.xlsx文件的第1列
 {propertyClassName}，配置类型名称，对应.xlsx文件的第3行
 {propertyDescription}，配置描述，对应.xlsx文件的第4行
-{propertyConfigName}，配置名称，对应.xlsx文件的第5行
+{propertyConfigName}，配置名称，对应????Recorder.xlsx文件的第5行，????Enum.xlsx文件的第2列
 {convertFunction}，根据{propertyClassName}类型，在ConvertFunctionTemplateMap中替换对应的转换方法，默认使用custom类型的转换方式。
 
-.xlsx文件格式要求
+.xlsx文件要求
+使用????Recorder.xlsx结尾代表配置内容文件，格式要求：
 第1行：是否需要导出，TRUE,FALSE
 第2行：配置属性名称，一般用于代码的属性名称
 第3行：配置类型名称，一般用于代码的属性类型，类型包括其中list和map的转换方法比较特殊
 第4行：配置描述，一般用于描述配置的复杂规则，代码的注释
 第5行：配置名称，一般用于描述配置的名称，代码的注释
 第6及以下行：配置内容
+使用????Enum.xlsx结尾代表枚举类型文件，格式要求：
+第1行：说明
+第2及以下行：枚举内容
+第1列：名称 第2列：含义

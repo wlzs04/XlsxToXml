@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace Assets.Script.Config.Recorder
+namespace Assets.Script.Config.Recorder{namespace}
 {
     /// <summary>
     /// 配置
     /// </summary>
-    class {recorderName}Recorder : RecorderBase
+    class {fileName} : RecorderBase
     {
 {Property}
 

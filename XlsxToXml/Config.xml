@@ -3,9 +3,10 @@
   <ExportXmlRelativePath>/..\..\..\..\..\YiSiHoliday\Assets\Artres\Config\Recorder/</ExportXmlRelativePath>
   <ExportCSRelativePath>/..\..\..\..\..\YiSiHoliday\Assets\Script\Config\Recorder/</ExportCSRelativePath>
   <ProjectVersionTool>git</ProjectVersionTool>
-  <CSClassTemplateFileRelativePath>/CSClassTemplate.txt</CSClassTemplateFileRelativePath>
-  <XmlFileName>{recorderName}.xml</XmlFileName>
-  <CSClassFileName>{recorderName}Recorder.cs</CSClassFileName>
+  <CSRecorderTemplateFileRelativePath>/CSRecorderTemplate.txt</CSRecorderTemplateFileRelativePath>
+  <CSEnumTemplateFileRelativePath>/CSEnumTemplate.txt</CSEnumTemplateFileRelativePath>
+  <XmlFileName>{fileName}.xml</XmlFileName>
+  <CSFileName>{fileName}.cs</CSFileName>
   <CSClassPropertyTemplateMap>
     <Property><![CDATA[        ///<summary>
         /// {propertyConfigName} {propertyDescription}
@@ -14,6 +15,10 @@
     <LoadFunction><![CDATA[                    case "{propertyValueName}":
                         {propertyValueName} = {convertFunction}
                         break;]]></LoadFunction>
+	<EunmField><![CDATA[        ///<summary>
+        /// {propertyConfigName}
+        ///<summary>
+        {propertyValueName},]]></EunmField>
   </CSClassPropertyTemplateMap>
   <ConvertFunctionTemplateMap>
     <int>Convert.ToInt32(attributeValue);</int>

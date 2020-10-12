@@ -16,9 +16,10 @@ namespace XlsxToXml
         public string ExportXmlRelativePath { get; set; } = "/../";
         public string ExportCSRelativePath { get; set; } = "/../";
         public string ProjectVersionTool { get; set; } = "git";
-        public string CSClassTemplateFileRelativePath { get; private set; } = "/CSClassTemplate.txt";
+        public string CSRecorderTemplateFileRelativePath { get; private set; } = "/CSRecorderTemplate.txt";
+        public string CSEnumTemplateFileRelativePath { get; private set; } = "/CSEnumTemplate.txt";
         public string XmlFileName { get; private set; } = "Recorder.xml";
-        public string CSClassFileName { get; private set; } = "Recorder.cs";
+        public string CSFileName { get; private set; } = "Recorder.cs";
         
         public Dictionary<string,string> CSClassPropertyTemplateMap { get; private set; } = new Dictionary<string, string>();
         public Dictionary<string,string> ConvertFunctionTemplateMap { get; private set; } = new Dictionary<string, string>();
@@ -76,17 +77,21 @@ namespace XlsxToXml
                 {
                     ProjectVersionTool = attributeValue;
                 }
-                else if (attributeName == "CSClassTemplateFileRelativePath")
+                else if (attributeName == "CSRecorderTemplateFileRelativePath")
                 {
-                    CSClassTemplateFileRelativePath = attributeValue;
+                    CSRecorderTemplateFileRelativePath = attributeValue;
+                }
+                else if (attributeName == "CSEnumTemplateFileRelativePath")
+                {
+                    CSEnumTemplateFileRelativePath = attributeValue;
                 }
                 else if (attributeName == "XmlFileName")
                 {
                     XmlFileName = attributeValue;
                 }
-                else if (attributeName == "CSClassFileName")
+                else if (attributeName == "CSFileName")
                 {
-                    CSClassFileName = attributeValue;
+                    CSFileName = attributeValue;
                 }
                 else if (attributeName == "CSClassPropertyTemplateMap")
                 {

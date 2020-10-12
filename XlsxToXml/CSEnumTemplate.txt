@@ -1,0 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Xml.Linq;
+
+namespace Assets.Script.Config.Recorder{namespace}
+{
+    /// <summary>
+    /// 枚举
+    /// </summary>
+    enum {fileName}
+    {
+{EunmField}
+    }
+}
