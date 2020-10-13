@@ -98,7 +98,7 @@ namespace XlsxToXml
             }
             else if(ConfigData.GetSingle().ProjectVersionTool == "svn")
             {
-                differentFileListString = ProcessHelper.Run("svn.exe", importXlsxRootPathTextBox.Text, $"diff --summarize");
+                differentFileListString = ProcessHelper.Run("svn.exe", importXlsxRootPathTextBox.Text, $"status");
             }
             if (string.IsNullOrEmpty(differentFileListString))
             {
@@ -110,10 +110,10 @@ namespace XlsxToXml
                 foreach (string differentFileString in differentFileList)
                 {
                     string differentFilePath = differentFileString.Trim();
-                    if(differentFilePath.StartsWith('M'))
+                    if(differentFilePath.StartsWith('M') || differentFilePath.StartsWith("??"))
                     {
-                        differentFilePath = differentFilePath.Substring(2);
-                        AddFileToFileList(importXlsxRootPathTextBox.Text+"/"+differentFilePath);
+                        string[] differentFilePathParamList = differentFilePath.Split(' ');
+                        AddFileToFileList(importXlsxRootPathTextBox.Text+"/"+ differentFilePathParamList[1]);
                     }
                 }
             }
