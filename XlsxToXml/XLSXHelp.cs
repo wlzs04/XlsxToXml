@@ -246,7 +246,7 @@ namespace XlsxToXml
             {
                 fileInfo.Directory.Create();
             }
-            FileStream fileStream = new FileStream(exportXMLFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            FileStream fileStream = new FileStream(exportXMLFilePath, FileMode.Create, FileAccess.ReadWrite);
             using (XmlWriter xmlWriter = XmlWriter.Create(fileStream, xws))
             {
                 doc.Save(xmlWriter);
