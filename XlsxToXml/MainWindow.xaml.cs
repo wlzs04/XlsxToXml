@@ -113,7 +113,7 @@ namespace XlsxToXml
                     if(differentFilePath.StartsWith('M') || differentFilePath.StartsWith("??"))
                     {
                         string[] differentFilePathParamList = differentFilePath.Split(' ');
-                        AddFileToFileList(importXlsxRootPathTextBox.Text+"/"+ differentFilePathParamList[1]);
+                        AddFileToFileList(importXlsxRootPathTextBox.Text+"/"+ differentFilePathParamList[differentFilePathParamList.Length-1]);
                     }
                 }
             }

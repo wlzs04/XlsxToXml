@@ -13,13 +13,13 @@
 
   <ItemGroup>
     <Reference Include="EPPlus">
-      <HintPath>bin\Debug\netcoreapp3.1\EPPlus.dll</HintPath>
+      <HintPath>EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="Excel">
-      <HintPath>bin\Debug\netcoreapp3.1\Excel.dll</HintPath>
+      <HintPath>Excel.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>bin\Debug\netcoreapp3.1\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
   </ItemGroup>
 
