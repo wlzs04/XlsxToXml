@@ -110,7 +110,7 @@ namespace XlsxToXml
                 foreach (string differentFileString in differentFileList)
                 {
                     string differentFilePath = differentFileString.Trim();
-                    if(differentFilePath.StartsWith('M') || differentFilePath.StartsWith("??"))
+                    if(differentFilePath.StartsWith('M') || differentFilePath.StartsWith("?"))
                     {
                         string[] differentFilePathParamList = differentFilePath.Split(' ');
                         AddFileToFileList(importXlsxRootPathTextBox.Text+"/"+ differentFilePathParamList[differentFilePathParamList.Length-1]);
