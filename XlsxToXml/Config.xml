@@ -1,4 +1,4 @@
-<Config>
+﻿<Config>
   <ImportXlsxRelativePath>/..\..\..\..\..\YiSiHoliday\Document\Artres\Config\Recorder\/</ImportXlsxRelativePath>
   <ExportXmlRelativePath>/..\..\..\..\..\YiSiHoliday\Assets\Artres\Config\Recorder/</ExportXmlRelativePath>
   <ExportCSRelativePath>/..\..\..\..\..\YiSiHoliday\Assets\Script\Config\Recorder/</ExportCSRelativePath>
@@ -8,39 +8,62 @@
   <XmlFileName>{fileName}.xml</XmlFileName>
   <CSFileName>{fileName}.cs</CSFileName>
   <CSClassPropertyTemplateMap>
-    <Property><![CDATA[        ///<summary>
+    <Property addInAttribute="true" addInElement="true"><![CDATA[        ///<summary>
         /// {propertyConfigName} {propertyDescription}
         ///<summary>
         public {propertyClassName} {propertyValueName} { get; private set; }]]></Property>
-    <LoadFunction><![CDATA[                    case "{propertyValueName}":
+    <LoadInAttributeFunction addInAttribute="true" addInElement="false"><![CDATA[                    case "{propertyValueName}":
                         {propertyValueName} = {convertFunction}
-                        break;]]></LoadFunction>
-	<EunmField><![CDATA[        ///<summary>
+                        break;]]></LoadInAttributeFunction>
+    <LoadNodeFunction addInAttribute="false" addInElement="true"><![CDATA[                    case "{propertyValueName}":
+                        {propertyValueName} = {convertFunction}
+                        break;]]></LoadNodeFunction>
+    <EunmField addInAttribute="true" addInElement="true"><![CDATA[        ///<summary>
         /// {propertyConfigName}
         ///<summary>
         {propertyValueName},]]></EunmField>
   </CSClassPropertyTemplateMap>
   <ConvertFunctionTemplateMap>
-    <int>Convert.ToInt32(attributeValue);</int>
-    <string>attributeValue;</string>
-    <float>(float)Convert.ToDouble(attributeValue);</float>
-    <bool>Convert.ToBoolean(attributeValue);</bool>
-    <list><![CDATA[new {propertyClassName}();
+    <int>Convert.ToInt32(inputString);</int>
+    <string>inputString;</string>
+    <float>(float)Convert.ToDouble(inputString);</float>
+    <bool>Convert.ToBoolean(inputString);</bool>
+    <SplitStringList><![CDATA[new {propertyClassName}();
                         string[] valueList =  attributeValue.Split('{propertyClassParam1}');
-                        foreach (string valueString in valueList)
+                        foreach (string inputString in valueList)
                         {
                             {propertyClassName1} propertyValue = {convertFunction1}
                             {propertyValueName}.Add(propertyValue);
-                        }]]></list>
-    <map><![CDATA[new {propertyClassName}();
+                        }]]></SplitStringList>
+    <SplitStringMap><![CDATA[new {propertyClassName}();
                         string[] pairList =  attributeValue.Split('{propertyClassParam1}');
                         foreach (string pair in pairList)
                         {
                             string[] keyValueList =  pair.Split('{propertyClassParam2}');
+                            string inputString = keyValueList[0];
                             {propertyClassName1} propertyKey = {convertFunction1}
+                            inputString = keyValueList[1];
                             {propertyClassName2} propertyValue = {convertFunction2}
                             {propertyValueName}.Add(propertyKey,propertyValue);
-                        }]]></map>
-    <custom>({propertyClassName})Assets.Script.Manager.HelpManager.ConvertStringToObjectByType(typeof({propertyClassName}),attributeValue);</custom>
+                        }]]></SplitStringMap>
+    <ValueList><![CDATA[new {propertyClassName}();
+                        XElement valueListElement = xmlNode.Element({propertyValueName});
+                        foreach (XElement keyValueNode in keyValueMapElement.Elements())
+                        {
+                            string inputString = keyValueNode.Attribute("value").Value;
+                            {propertyClassName1} propertyValue = {convertFunction1}
+                            {propertyValueName}.Add(propertyValue);
+                        }]]></ValueList>
+    <KeyValueMap><![CDATA[new {propertyClassName}();
+                        XElement keyValueMapElement = xmlNode.Element({propertyValueName});
+                        foreach (XElement keyValueNode in keyValueMapElement.Elements())
+                        {
+                            string inputString = keyValueNode.Attribute("key").Value;
+                            {propertyClassName1} propertyKey = {convertFunction1}
+                            inputString = keyValueNode.Attribute("value").Value;
+                            {propertyClassName2} propertyValue = {convertFunction2}
+                            {propertyValueName}.Add(propertyKey, propertyValue);
+                        }]]></KeyValueMap>
+    <custom>({propertyClassName})Assets.Script.Hotfix.HelpManager.ConvertStringToObjectByType(typeof({propertyClassName}),attributeValue);</custom>
   </ConvertFunctionTemplateMap>
 </Config>

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace Assets.Script.Config.Recorder{namespace}
+namespace Assets.Script.Hotfix.Config.Recorder{namespace}
 {
     /// <summary>
     /// 配置
@@ -19,7 +19,15 @@ namespace Assets.Script.Config.Recorder{namespace}
                 string attributeValue = attribute.Value;
                 switch (attributeName)
                 {
-{LoadFunction}
+{LoadInAttributeFunction}
+                }
+            }
+            foreach (XElement element in xmlNode.Elements())
+            {
+                string nodeName = element.Name.LocalName;
+                switch (nodeName)
+                {
+{LoadNodeFunction}
                 }
             }
         }

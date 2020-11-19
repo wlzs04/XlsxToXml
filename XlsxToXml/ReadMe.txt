@@ -23,6 +23,12 @@ ConvertFunctionTemplateMap 根据类型进行转换方法模板map，配置中�
 {propertyConfigName}，配置名称，对应????Recorder.xlsx文件的第5行，????Enum.xlsx文件的第2列
 {convertFunction}，根据{propertyClassName}类型，在ConvertFunctionTemplateMap中替换对应的转换方法，默认使用custom类型的转换方式。
 
+特殊类型：                    说明                             格式要求，例子：                             说明
+SplitStringList    将string类型安分割字符分割组成List    SplitStringList int ;         字符串使用';'进行分割，每个子字符串都是int类型，将值组成list
+SplitStringMap     将string类型安分割字符分割组成Map     SplitStringMap int,bool ;#    字符串先使用';'进行分割组成list，每个子字符串再使用'#'分割成key(int类型)和value(bool类型)，将key和value组成Map
+ValueList          此列后指定个数的列都作为List的子节点  ValueList int 4               此列的后4列为子节点，他们的内容作为value，安顺序组成List
+KeyValueMap        此列后指定个数的列都作为Map的子节点   KeyValueMap int,bool 4        此列的后4列为子节点，他们的配置属性名称作为key，内容作为value，组成Map
+
 .xlsx文件要求
 使用????Recorder.xlsx结尾代表配置内容文件，格式要求：
 第1行：是否需要导出，TRUE,FALSE

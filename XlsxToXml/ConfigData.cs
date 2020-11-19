@@ -8,6 +8,16 @@ using System.Xml.Linq;
 namespace XlsxToXml
 {
     /// <summary>
+    /// 属性模板结构体
+    /// </summary>
+    struct PropertyTemplateInfoStruct
+    {
+        public bool addInAttribute;
+        public bool addInElement;
+        public string content;
+    }
+
+    /// <summary>
     /// 配置类
     /// </summary>
     class ConfigData
@@ -23,8 +33,8 @@ namespace XlsxToXml
         public string XmlFileName { get; private set; } = "Recorder.xml";
         public string CSFileName { get; private set; } = "Recorder.cs";
         
-        public Dictionary<string,string> CSClassPropertyTemplateMap { get; private set; } = new Dictionary<string, string>();
-        public Dictionary<string,string> ConvertFunctionTemplateMap { get; private set; } = new Dictionary<string, string>();
+        public Dictionary<string, PropertyTemplateInfoStruct> CSClassPropertyTemplateMap { get; private set; } = new Dictionary<string, PropertyTemplateInfoStruct>();
+        public Dictionary<string, string> ConvertFunctionTemplateMap { get; private set; } = new Dictionary<string, string>();
 
         string configPath = "";
 
@@ -100,7 +110,11 @@ namespace XlsxToXml
                     CSClassPropertyTemplateMap.Clear();
                     foreach (var CSClassPropertyTemplateElement in xElement.Elements())
                     {
-                        CSClassPropertyTemplateMap.Add(CSClassPropertyTemplateElement.Name.LocalName, CSClassPropertyTemplateElement.Value);
+                        PropertyTemplateInfoStruct propertyTemplateInfoStruct = new PropertyTemplateInfoStruct();
+                        propertyTemplateInfoStruct.addInAttribute = Convert.ToBoolean(CSClassPropertyTemplateElement.Attribute("addInAttribute").Value);
+                        propertyTemplateInfoStruct.addInElement = Convert.ToBoolean(CSClassPropertyTemplateElement.Attribute("addInElement").Value);
+                        propertyTemplateInfoStruct.content = CSClassPropertyTemplateElement.Value;
+                        CSClassPropertyTemplateMap.Add(CSClassPropertyTemplateElement.Name.LocalName, propertyTemplateInfoStruct);
                     }
                 }
                 else if (attributeName == "ConvertFunctionTemplateMap")

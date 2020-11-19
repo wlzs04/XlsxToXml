@@ -34,10 +34,12 @@
                 <TextBlock HorizontalAlignment="Left" Margin="0,47,0,0" Text="xml根路径：" TextWrapping="Wrap" VerticalAlignment="Top" Width="75"/>
                 <TextBox x:Name="exportXmlRootPathTextBox" Margin="80,47,80,0" TextWrapping="NoWrap" VerticalAlignment="Top" IsReadOnly="True"/>
                 <Button x:Name="selectExportXmlRootPathButton" Content="选择路径" HorizontalAlignment="Right" Margin="0,47,0,0" VerticalAlignment="Top" Width="75" Click="SelectExportXmlRootPathButton_Click"/>
+                <Button x:Name="openExportXmlRootPathButton" Content="打开路径" HorizontalAlignment="Right" Margin="0,80,0,0" VerticalAlignment="Top" Width="75" Click="OpenExportXmlRootPathButton_Click"/>
                 <CheckBox x:Name="needGenCSFileCheckBox" Content="生成C#文件" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsChecked="True" Margin="0,102,0,0"/>
                 <TextBlock HorizontalAlignment="Left" Margin="0,147,0,0" Text="C#根路径：" TextWrapping="Wrap" VerticalAlignment="Top" Width="75"/>
                 <TextBox x:Name="exportCSRootPathTextBox" Margin="80,147,80,0" TextWrapping="NoWrap" VerticalAlignment="Top" IsReadOnly="True"/>
                 <Button x:Name="selectExportCSRootPathButton" Content="选择路径" HorizontalAlignment="Right" Margin="0,147,0,0" VerticalAlignment="Top" Width="75" Click="SelectExportCSRootPathButton_Click"/>
+                <Button x:Name="openExportCSRootPathButton" Content="打开路径" HorizontalAlignment="Right" Margin="0,180,0,0" VerticalAlignment="Top" Width="75" Click="OpenExportCSRootPathButton_Click"/>
                 <Button x:Name="genFileButton" Content="生成" HorizontalAlignment="Center" Margin="0,180,0,0" VerticalAlignment="Top" Height="50" Width="150" FontSize="20" Click="GenFileButton_Click"/>
 
                 <TextBlock HorizontalAlignment="Center" Margin="0,250,0,0" Text="日志" TextWrapping="Wrap" VerticalAlignment="Top" Width="75" FontSize="20" TextAlignment="Center"/>

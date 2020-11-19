@@ -192,6 +192,10 @@ namespace XlsxToXml
                     //xlsx文件格式：第五行，为配置名称，作为属性名称的注释
                     propertyConfigNameList.Add(xlsxDataRowCollection[4][index].ToString());
                 }
+                if (propertyValueNameList[0] != "id")
+                {
+                    fileLogCallback?.Invoke($"xlsx文件：{xlsxFilePath}中第一列不是id，请注意！");
+                }
             }
             else if(xlsxType == XlsxEnum.Enum)
             {
@@ -203,6 +207,11 @@ namespace XlsxToXml
                 for (int rowIndex = 1; rowIndex < rowCount; rowIndex++)
                 {
                     object[] itemArray = xlsxDataRowCollection[rowIndex].ItemArray;
+                    if (itemArray.Length < 1 || itemArray[0].ToString() == "")
+                    {
+                        fileLogCallback?.Invoke($"xlsx文件: {xlsxFilePath}表内容出现空值，可能是有意为之或内容未清除彻底，总行数:{rowCount},请核实row:{rowIndex + 1}：");
+                        break;
+                    }
                     propertyValueNameList.Add(itemArray[0].ToString());
                     propertyConfigNameList.Add(itemArray[1].ToString().ToString());
                 }
@@ -222,17 +231,47 @@ namespace XlsxToXml
             //先将文件名替换为配置名称
             string xmlFileName = ConfigData.GetSingle().XmlFileName.Replace("{fileName}", fileName);
             exportXMLFilePath = Path.GetDirectoryName(exportXMLFilePath) + "/" + xmlFileName;
-            fileLogCallback?.Invoke($"xlsx文件开始导出：{xlsxFilePath} -> {exportXMLFilePath}");
+            //fileLogCallback?.Invoke($"xlsx文件开始导出：{xlsxFilePath} -> {exportXMLFilePath}");
 
             int rowCount = xlsxDataRowCollection.Count;
             XDocument doc = new XDocument(new XElement(fileName));
             for (int rowIndex = 5; rowIndex < rowCount; rowIndex++)
             {
                 object[] itemArray = xlsxDataRowCollection[rowIndex].ItemArray;
+                if(itemArray.Length<1 || itemArray[0].ToString()=="")
+                {
+                    fileLogCallback?.Invoke($"xml文件{exportXMLFilePath}生成成功，但表内容出现空值，可能是有意为之或内容未清除彻底，总行数:{rowCount},请核实row:{rowIndex+1}：");
+                    break;
+                }
                 XElement recordNode = new XElement("Recorder");
                 for (int i = 0; i < needExportIndexList.Count; i++)
                 {
-                    recordNode.Add(new XAttribute(propertyValueNameList[i], itemArray[needExportIndexList[i]]));
+                    if(propertyClassList[i].classType=="KeyValueMap")
+                    {
+                        XElement keyValueMap = new XElement(propertyValueNameList[i]);
+                        int mapLength = Convert.ToInt32(propertyClassList[i].classParam);
+                        for (int mapIndex = 0; mapIndex < mapLength; mapIndex++)
+                        {
+                            keyValueMap.Add(new XElement("KeyValue", new XAttribute("key", propertyValueNameList[i + mapIndex + 1]), new XAttribute("value", itemArray[needExportIndexList[i + mapIndex + 1]])));
+                        }
+                        recordNode.Add(keyValueMap);
+                        i += mapLength;
+                    }
+                    if (propertyClassList[i].classType == "ValueList")
+                    {
+                        XElement keyValueList = new XElement(propertyValueNameList[i]);
+                        int listLength = Convert.ToInt32(propertyClassList[i].classParam);
+                        for (int listIndex = 0; listIndex < listLength; listIndex++)
+                        {
+                            keyValueList.Add(new XElement("Value",new XAttribute("value", itemArray[needExportIndexList[i + listIndex + 1]])));
+                        }
+                        recordNode.Add(keyValueList);
+                        i += listLength;
+                    }
+                    else
+                    {
+                        recordNode.Add(new XAttribute(propertyValueNameList[i], itemArray[needExportIndexList[i]]));
+                    }
                 }
                 doc.Root.Add(recordNode);
             }
@@ -252,7 +291,7 @@ namespace XlsxToXml
                 doc.Save(xmlWriter);
             }
 
-            fileLogCallback?.Invoke($"xml文件生成成功：{exportXMLFilePath}");
+            //fileLogCallback?.Invoke($"xml文件生成成功：{exportXMLFilePath}");
         }
 
         /// <summary>
@@ -264,7 +303,7 @@ namespace XlsxToXml
             //先将文件名替换为配置名称
             string csFileName = ConfigData.GetSingle().CSFileName.Replace("{fileName}", fileName);
             exportCSFilePath = Path.GetDirectoryName(exportCSFilePath) + "/" + csFileName;
-            fileLogCallback?.Invoke($"xlsx文件开始导出：{xlsxFilePath} -> {exportCSFilePath}");
+            //fileLogCallback?.Invoke($"xlsx文件开始导出：{xlsxFilePath} -> {exportCSFilePath}");
 
             FileInfo fileInfo = new FileInfo(exportCSFilePath);
             if (!fileInfo.Directory.Exists)
@@ -297,58 +336,102 @@ namespace XlsxToXml
                 }
                 csClassContent.Replace("{namespace}", namespaceString);
                 //替换属性模板
-                Dictionary<string, string> propertyTemplateMap = ConfigData.GetSingle().CSClassPropertyTemplateMap;
+                Dictionary<string, PropertyTemplateInfoStruct> propertyTemplateMap = ConfigData.GetSingle().CSClassPropertyTemplateMap;
                 foreach (var property in propertyTemplateMap)
                 {
+                    PropertyTemplateInfoStruct propertyTemplateInfoStruct = property.Value;
                     StringBuilder propertyTotalContent = new StringBuilder();
                     for (int i = 0; i < propertyValueNameList.Count; i++)
                     {
-                        StringBuilder propertyEveryContent = new StringBuilder(property.Value);
-                        if (propertyClassList.Count>0)
+                        bool isInAttribute = true;
+                        if(propertyClassList.Count>0)
                         {
-                            //根据类型替换转换方法模板
-                            propertyEveryContent.Replace("{convertFunction}", GetConvertFunctionByClassType(propertyClassList[i].classType));
-                            if (propertyClassList[i].classType == "map")
+                            isInAttribute = propertyClassList[i].classType != "KeyValueMap" && propertyClassList[i].classType != "ValueList";
+                        }
+                        bool isInElement = !isInAttribute;
+                        bool needAdd = false;
+                        if (isInAttribute && propertyTemplateInfoStruct.addInAttribute)
+                        {
+                            needAdd = true;
+                        }
+                        if(isInElement && propertyTemplateInfoStruct.addInElement)
+                        {
+                            needAdd = true;
+                        }
+                        if(needAdd)
+                        {
+                            StringBuilder propertyEveryContent = new StringBuilder(propertyTemplateInfoStruct.content);
+                            if (propertyClassList.Count > 0)
                             {
-                                string[] propertyClassNameList = propertyClassList[i].className.Split(',');
-                                string propertyClassParam1 = propertyClassList[i].classParam[0].ToString();
-                                string propertyClassParam2 = propertyClassList[i].classParam[1].ToString();
-                                propertyEveryContent.Replace("{propertyClassName1}", propertyClassNameList[0]);
-                                propertyEveryContent.Replace("{propertyClassName2}", propertyClassNameList[1]);
-                                propertyEveryContent.Replace("{propertyClassParam1}", propertyClassParam1);
-                                propertyEveryContent.Replace("{propertyClassParam2}", propertyClassParam2);
-                                propertyEveryContent.Replace("{convertFunction1}", GetConvertFunctionByClassType(propertyClassNameList[0]).Replace("{propertyClassName}", propertyClassNameList[0]));
-                                propertyEveryContent.Replace("{convertFunction2}", GetConvertFunctionByClassType(propertyClassNameList[1]).Replace("{propertyClassName}", propertyClassNameList[1]));
-                                propertyEveryContent.Replace("{propertyClassName}", $"Dictionary<{propertyClassList[i].className}>");
+                                //根据类型替换转换方法模板
+                                propertyEveryContent.Replace("{convertFunction}", GetConvertFunctionByClassType(propertyClassList[i].classType));
+                                if (propertyClassList[i].classType == "SplitStringList")
+                                {
+                                    propertyEveryContent.Replace("{propertyClassParam1}", propertyClassList[i].classParam);
+                                    propertyEveryContent.Replace("{convertFunction1}", GetConvertFunctionByClassType(propertyClassList[i].className).Replace("{propertyClassName}", propertyClassList[i].className));
+                                    propertyEveryContent.Replace("{propertyClassName1}", propertyClassList[i].className);
+                                    propertyEveryContent.Replace("{propertyClassName}", $"List<{propertyClassList[i].className}>");
+                                }
+                                else if (propertyClassList[i].classType == "SplitStringMap")
+                                {
+                                    string[] propertyClassNameList = propertyClassList[i].className.Split(',');
+                                    string propertyClassParam1 = propertyClassList[i].classParam[0].ToString();
+                                    string propertyClassParam2 = propertyClassList[i].classParam[1].ToString();
+                                    propertyEveryContent.Replace("{propertyClassName1}", propertyClassNameList[0]);
+                                    propertyEveryContent.Replace("{propertyClassName2}", propertyClassNameList[1]);
+                                    propertyEveryContent.Replace("{propertyClassParam1}", propertyClassParam1);
+                                    propertyEveryContent.Replace("{propertyClassParam2}", propertyClassParam2);
+                                    propertyEveryContent.Replace("{convertFunction1}", GetConvertFunctionByClassType(propertyClassNameList[0]).Replace("{propertyClassName}", propertyClassNameList[0]));
+                                    propertyEveryContent.Replace("{convertFunction2}", GetConvertFunctionByClassType(propertyClassNameList[1]).Replace("{propertyClassName}", propertyClassNameList[1]));
+                                    propertyEveryContent.Replace("{propertyClassName}", $"Dictionary<{propertyClassList[i].className}>");
+                                }
+                                else if (propertyClassList[i].classType == "ValueList")
+                                {
+                                    propertyEveryContent.Replace("{propertyClassParam1}", propertyClassList[i].classParam);
+                                    propertyEveryContent.Replace("{convertFunction1}", GetConvertFunctionByClassType(propertyClassList[i].className).Replace("{propertyClassName}", propertyClassList[i].className));
+                                    propertyEveryContent.Replace("{propertyClassName1}", propertyClassList[i].className);
+                                    propertyEveryContent.Replace("{propertyClassName}", $"List<{propertyClassList[i].className}>");
+                                }
+                                else if (propertyClassList[i].classType == "KeyValueMap")
+                                {
+                                    string[] propertyClassNameList = propertyClassList[i].className.Split(',');
+                                    string propertyClassParam1 = propertyClassList[i].classParam[0].ToString();
+                                    string propertyClassParam2 = propertyClassList[i].classParam[1].ToString();
+                                    propertyEveryContent.Replace("{propertyClassName1}", propertyClassNameList[0]);
+                                    propertyEveryContent.Replace("{propertyClassName2}", propertyClassNameList[1]);
+                                    propertyEveryContent.Replace("{propertyClassParam1}", propertyClassParam1);
+                                    propertyEveryContent.Replace("{propertyClassParam2}", propertyClassParam2);
+                                    propertyEveryContent.Replace("{convertFunction1}", GetConvertFunctionByClassType(propertyClassNameList[0]).Replace("{propertyClassName}", propertyClassNameList[0]));
+                                    propertyEveryContent.Replace("{convertFunction2}", GetConvertFunctionByClassType(propertyClassNameList[1]).Replace("{propertyClassName}", propertyClassNameList[1]));
+                                    propertyEveryContent.Replace("{propertyClassName}", $"Dictionary<{propertyClassList[i].className}>");
+                                }
+                                else
+                                {
+                                    propertyEveryContent.Replace("{propertyClassName}", propertyClassList[i].className);
+                                }
                             }
-                            else if (propertyClassList[i].classType == "list")
+                            if (propertyConfigNameList.Count > 0)
                             {
-                                propertyEveryContent.Replace("{propertyClassParam1}", propertyClassList[i].classParam);
-                                propertyEveryContent.Replace("{convertFunction1}", GetConvertFunctionByClassType(propertyClassList[i].className).Replace("{propertyClassName}", propertyClassList[i].className));
-                                propertyEveryContent.Replace("{propertyClassName1}", propertyClassList[i].className);
-                                propertyEveryContent.Replace("{propertyClassName}", $"List<{propertyClassList[i].className}>");
+                                propertyEveryContent.Replace("{propertyConfigName}", propertyConfigNameList[i]);
                             }
-                            else
+                            if (propertyDescriptionList.Count > 0)
                             {
-                                propertyEveryContent.Replace("{propertyClassName}", propertyClassList[i].className);
+                                propertyEveryContent.Replace("{propertyDescription}", propertyDescriptionList[i]);
+                            }
+                            if (propertyValueNameList.Count > 0)
+                            {
+                                propertyEveryContent.Replace("{propertyValueName}", propertyValueNameList[i]);
+                            }
+                            propertyTotalContent.Append(propertyEveryContent.ToString());
+                            if (i != propertyValueNameList.Count - 1)
+                            {
+                                propertyTotalContent.Append('\n');
                             }
                         }
-                        if(propertyConfigNameList.Count>0)
+                        if (propertyClassList.Count>0 && propertyClassList[i].classType == "KeyValueMap" && propertyClassList[i].classType == "ValueList")
                         {
-                            propertyEveryContent.Replace("{propertyConfigName}",propertyConfigNameList[i]);
-                        }
-                        if(propertyDescriptionList.Count > 0)
-                        {
-                            propertyEveryContent.Replace("{propertyDescription}", propertyDescriptionList[i]);
-                        }
-                        if (propertyValueNameList.Count > 0)
-                        {
-                            propertyEveryContent.Replace("{propertyValueName}", propertyValueNameList[i]);
-                        }
-                        propertyTotalContent.Append(propertyEveryContent.ToString());
-                        if (i != propertyValueNameList.Count-1)
-                        {
-                            propertyTotalContent.Append('\n');
+                            int mapLength = Convert.ToInt32(propertyClassList[i].classParam);
+                            i += mapLength;
                         }
                     }
                     csClassContent.Replace($"{{{property.Key}}}", propertyTotalContent.ToString());

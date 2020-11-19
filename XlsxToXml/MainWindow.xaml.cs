@@ -152,6 +152,11 @@ namespace XlsxToXml
             }
         }
 
+        private void OpenExportXmlRootPathButton_Click(object sender, RoutedEventArgs e)
+        {
+            ProcessHelper.Run("explorer.exe","", exportXmlRootPathTextBox.Text);
+        }
+
         private void SelectExportCSRootPathButton_Click(object sender, RoutedEventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
@@ -163,6 +168,11 @@ namespace XlsxToXml
                 configData.ExportCSAbsolutePath = exportCSRootPathTextBox.Text;
                 configData.ExportCSRelativePath = $"/{System.IO.Path.GetRelativePath(Environment.CurrentDirectory, exportCSRootPathTextBox.Text)}/";
             }
+        }
+
+        private void OpenExportCSRootPathButton_Click(object sender, RoutedEventArgs e)
+        {
+            ProcessHelper.Run("explorer.exe", "", exportCSRootPathTextBox.Text);
         }
 
         private void FileListBox_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -240,7 +250,7 @@ namespace XlsxToXml
                 }
                 else if (filePath.Contains("~$"))
                 {
-                    Log($"选择的文件：{filePath}是~$临时文件。");
+                    //Log($"选择的文件：{filePath}是~$临时文件。");
                 }
                 else
                 {
