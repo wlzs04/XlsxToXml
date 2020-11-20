@@ -15,8 +15,11 @@ CSClassPropertyTemplateMap 属类性模板map，在C#模板类文件中对应位
 ConvertFunctionTemplateMap 根据类型进行转换方法模板map，配置中的字符串会直接替换到{convertFunction}中。
 
 模板类文件和配置中可使用的参数
+普通参数：
 {namespace}，命名空间，对应.cs文件根路径的相对路径
 {fileName}，配置文件名称，对应.xlsx文件的名称
+{key}，配置的第一列属性名称，用来作为索引，如果类型不是int会强转为int，需要保证配置文件中至少有一列导出
+属性参数：会根据配置列数循环处理
 {propertyValueName}，配置属性名称，对应????Recorder.xlsx文件的第2行，????Enum.xlsx文件的第1列
 {propertyClassName}，配置类型名称，对应.xlsx文件的第3行
 {propertyDescription}，配置描述，对应.xlsx文件的第4行

@@ -192,10 +192,6 @@ namespace XlsxToXml
                     //xlsx文件格式：第五行，为配置名称，作为属性名称的注释
                     propertyConfigNameList.Add(xlsxDataRowCollection[4][index].ToString());
                 }
-                if (propertyValueNameList[0] != "id")
-                {
-                    fileLogCallback?.Invoke($"xlsx文件：{xlsxFilePath}中第一列不是id，请注意！");
-                }
             }
             else if(xlsxType == XlsxEnum.Enum)
             {
@@ -335,12 +331,25 @@ namespace XlsxToXml
                     namespaceString = "";
                 }
                 csClassContent.Replace("{namespace}", namespaceString);
+                //替换索引
+                if(propertyClassList.Count>0 && propertyValueNameList.Count>0)
+                {
+                    if(propertyClassList[0].classType=="int")
+                    {
+                        csClassContent.Replace("{key}", propertyValueNameList[0]);
+                    }
+                    else
+                    {
+                        csClassContent.Replace("{key}", "(int)"+propertyValueNameList[0]);
+                    }
+                }
                 //替换属性模板
                 Dictionary<string, PropertyTemplateInfoStruct> propertyTemplateMap = ConfigData.GetSingle().CSClassPropertyTemplateMap;
                 foreach (var property in propertyTemplateMap)
                 {
                     PropertyTemplateInfoStruct propertyTemplateInfoStruct = property.Value;
                     StringBuilder propertyTotalContent = new StringBuilder();
+                    bool isFirstAdd = true;
                     for (int i = 0; i < propertyValueNameList.Count; i++)
                     {
                         bool isInAttribute = true;
@@ -360,6 +369,12 @@ namespace XlsxToXml
                         }
                         if(needAdd)
                         {
+                            //处理换行
+                            if (!isFirstAdd)
+                            {
+                                propertyTotalContent.Append('\n');
+                            }
+                            isFirstAdd = false;
                             StringBuilder propertyEveryContent = new StringBuilder(propertyTemplateInfoStruct.content);
                             if (propertyClassList.Count > 0)
                             {
@@ -387,7 +402,6 @@ namespace XlsxToXml
                                 }
                                 else if (propertyClassList[i].classType == "ValueList")
                                 {
-                                    propertyEveryContent.Replace("{propertyClassParam1}", propertyClassList[i].classParam);
                                     propertyEveryContent.Replace("{convertFunction1}", GetConvertFunctionByClassType(propertyClassList[i].className).Replace("{propertyClassName}", propertyClassList[i].className));
                                     propertyEveryContent.Replace("{propertyClassName1}", propertyClassList[i].className);
                                     propertyEveryContent.Replace("{propertyClassName}", $"List<{propertyClassList[i].className}>");
@@ -395,12 +409,8 @@ namespace XlsxToXml
                                 else if (propertyClassList[i].classType == "KeyValueMap")
                                 {
                                     string[] propertyClassNameList = propertyClassList[i].className.Split(',');
-                                    string propertyClassParam1 = propertyClassList[i].classParam[0].ToString();
-                                    string propertyClassParam2 = propertyClassList[i].classParam[1].ToString();
                                     propertyEveryContent.Replace("{propertyClassName1}", propertyClassNameList[0]);
                                     propertyEveryContent.Replace("{propertyClassName2}", propertyClassNameList[1]);
-                                    propertyEveryContent.Replace("{propertyClassParam1}", propertyClassParam1);
-                                    propertyEveryContent.Replace("{propertyClassParam2}", propertyClassParam2);
                                     propertyEveryContent.Replace("{convertFunction1}", GetConvertFunctionByClassType(propertyClassNameList[0]).Replace("{propertyClassName}", propertyClassNameList[0]));
                                     propertyEveryContent.Replace("{convertFunction2}", GetConvertFunctionByClassType(propertyClassNameList[1]).Replace("{propertyClassName}", propertyClassNameList[1]));
                                     propertyEveryContent.Replace("{propertyClassName}", $"Dictionary<{propertyClassList[i].className}>");
@@ -423,12 +433,8 @@ namespace XlsxToXml
                                 propertyEveryContent.Replace("{propertyValueName}", propertyValueNameList[i]);
                             }
                             propertyTotalContent.Append(propertyEveryContent.ToString());
-                            if (i != propertyValueNameList.Count - 1)
-                            {
-                                propertyTotalContent.Append('\n');
-                            }
                         }
-                        if (propertyClassList.Count>0 && propertyClassList[i].classType == "KeyValueMap" && propertyClassList[i].classType == "ValueList")
+                        if (propertyClassList.Count>0 && (propertyClassList[i].classType == "KeyValueMap" || propertyClassList[i].classType == "ValueList"))
                         {
                             int mapLength = Convert.ToInt32(propertyClassList[i].classParam);
                             i += mapLength;

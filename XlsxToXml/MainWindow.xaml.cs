@@ -38,13 +38,10 @@ namespace XlsxToXml
             deleteMenuItem.Header = "删除";
             deleteMenuItem.Click += (sender, e) =>
             {
-                for (int i = fileListBox.SelectedItems.Count - 1; i >= 0; i--)
-                {
-                    fileListBox.Items.Remove(fileListBox.SelectedItems[i]);
-                }
+                RemoveCurrentSelectFile();
             };
             fileListBox.ContextMenu.Items.Add(deleteMenuItem);
-            fileListBox.SelectionMode = SelectionMode.Multiple;
+            fileListBox.SelectionMode = SelectionMode.Extended;
 
             //初始化配置
             configData = ConfigData.GetSingle();
@@ -91,31 +88,41 @@ namespace XlsxToXml
 
         private void SelectDifferentFileButton_Click(object sender, RoutedEventArgs e)
         {
-            string differentFileListString = "";
-            if (ConfigData.GetSingle().ProjectVersionTool == "git")
+            try
             {
-                differentFileListString = ProcessHelper.Run("git.exe", importXlsxRootPathTextBox.Text, $"status {importXlsxRootPathTextBox.Text} -s");
-            }
-            else if(ConfigData.GetSingle().ProjectVersionTool == "svn")
-            {
-                differentFileListString = ProcessHelper.Run("svn.exe", importXlsxRootPathTextBox.Text, $"status");
-            }
-            if (string.IsNullOrEmpty(differentFileListString))
-            {
-                Log("没有差异文件！");
-            }
-            else
-            {
-                string[] differentFileList = differentFileListString.Split('\n');
-                foreach (string differentFileString in differentFileList)
+                string differentFileListString = "";
+                if (ConfigData.GetSingle().ProjectVersionTool == "git")
                 {
-                    string differentFilePath = differentFileString.Trim();
-                    if(differentFilePath.StartsWith('M') || differentFilePath.StartsWith("?"))
+                    differentFileListString = ProcessHelper.Run("git.exe", importXlsxRootPathTextBox.Text, $"status {importXlsxRootPathTextBox.Text} -s");
+                }
+                else if (ConfigData.GetSingle().ProjectVersionTool == "svn")
+                {
+                    differentFileListString = ProcessHelper.Run("svn.exe", importXlsxRootPathTextBox.Text, $"status");
+                }
+                if (string.IsNullOrEmpty(differentFileListString))
+                {
+                    Log("没有差异文件！");
+                }
+                else
+                {
+                    string[] differentFileList = differentFileListString.Split('\n');
+                    foreach (string differentFileString in differentFileList)
                     {
-                        string[] differentFilePathParamList = differentFilePath.Split(' ');
-                        AddFileToFileList(importXlsxRootPathTextBox.Text+"/"+ differentFilePathParamList[differentFilePathParamList.Length-1]);
+                        string differentFilePath = differentFileString.Trim();
+                        if (differentFilePath.StartsWith('M') || differentFilePath.StartsWith("?"))
+                        {
+                            string[] differentFilePathParamList = differentFilePath.Split(' ');
+                            AddFileToFileList(importXlsxRootPathTextBox.Text + "/" + differentFilePathParamList[differentFilePathParamList.Length - 1]);
+                        }
                     }
                 }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show("选择差异文件失败！可能是没有在配置文件Config.xml中的ProjectVersionTool属性设置svn或git，又或者是安装svn或git时没添加命令行工具。");
+                Log(exception.Message);
+                Log(exception.StackTrace);
+                throw;
             }
         }
 
@@ -296,33 +303,45 @@ namespace XlsxToXml
                 return;
             }
 
-            await Task.Run(() =>
+            string currentXlsxFilePath = "";
+            try
             {
-                Log($"开始生成文件！");
-                foreach (string xlsxFileRelativePath in fileRelaticePathList)
+                await Task.Run(() =>
                 {
-                    string xlsxFilePath = importXlsxRootPathText + "/" + xlsxFileRelativePath;
-                    FileInfo xlsxFileInfo = new FileInfo(xlsxFilePath);
-                    string fileName = xlsxFileInfo.Name.Substring(0, xlsxFileInfo.Name.LastIndexOf('.'));
-                    
-                    string xmlFilePath = exportXmlRootPathText + "/" + xlsxFileRelativePath;
-                    xmlFilePath = xmlFilePath.Substring(0, xmlFilePath.LastIndexOf('.')) + ".xml";
-                    string csFilePath = exportCSRootPathText + "/" + xlsxFileRelativePath;
-                    csFilePath = csFilePath.Substring(0, csFilePath.LastIndexOf('.')) + ".cs";
+                    Log($"开始生成文件！");
+                    foreach (string xlsxFileRelativePath in fileRelaticePathList)
+                    {
+                        string xlsxFilePath = importXlsxRootPathText + "/" + xlsxFileRelativePath;
+                        currentXlsxFilePath = xlsxFilePath;
+                        FileInfo xlsxFileInfo = new FileInfo(xlsxFilePath);
+                        string fileName = xlsxFileInfo.Name.Substring(0, xlsxFileInfo.Name.LastIndexOf('.'));
 
-                    XLSXFile xlsxFile = new XLSXFile(xlsxFilePath);
-                    if(needExportXml)
-                    {
-                        xlsxFile.ExportXML(xmlFilePath);
+                        string xmlFilePath = exportXmlRootPathText + "/" + xlsxFileRelativePath;
+                        xmlFilePath = xmlFilePath.Substring(0, xmlFilePath.LastIndexOf('.')) + ".xml";
+                        string csFilePath = exportCSRootPathText + "/" + xlsxFileRelativePath;
+                        csFilePath = csFilePath.Substring(0, csFilePath.LastIndexOf('.')) + ".cs";
+
+                        XLSXFile xlsxFile = new XLSXFile(xlsxFilePath);
+                        if (needExportXml)
+                        {
+                            xlsxFile.ExportXML(xmlFilePath);
+                        }
+                        if (needExportCS)
+                        {
+                            xlsxFile.ExportCS(csFilePath);
+                        }
                     }
-                    if(needExportCS)
-                    {
-                        xlsxFile.ExportCS(csFilePath);
-                    }
-                }
-                Log($"生成文件结束！");
-                MessageBox.Show("生成文件结束！");
-            });
+                    Log($"生成文件结束！");
+                    MessageBox.Show("生成文件结束！");
+                });
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show($"生成文件失败！{currentXlsxFilePath}");
+                Log($"生成文件失败！{currentXlsxFilePath}");
+                Log(exception.Message);
+                Log(exception.StackTrace);
+            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -346,6 +365,25 @@ namespace XlsxToXml
                         AddFileToFileList(filePath);
                     }
                 }
+            }
+        }
+
+        private void FileListBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key==Key.Delete)
+            {
+                RemoveCurrentSelectFile();
+            }
+        }
+
+        /// <summary>
+        /// 移除当前选择文件
+        /// </summary>
+        void RemoveCurrentSelectFile()
+        {
+            for (int i = fileListBox.SelectedItems.Count - 1; i >= 0; i--)
+            {
+                fileListBox.Items.Remove(fileListBox.SelectedItems[i]);
             }
         }
     }

@@ -4,9 +4,6 @@ using System.Xml.Linq;
 
 namespace Assets.Script.Hotfix.Config.Recorder{namespace}
 {
-    /// <summary>
-    /// 枚举
-    /// </summary>
     enum {fileName}
     {
 {EunmField}

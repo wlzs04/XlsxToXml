@@ -21,7 +21,7 @@
                 <Button x:Name="selectDifferentFileButton" Content="添加差异文件" HorizontalAlignment="Right" Margin="0,60,110,0" VerticalAlignment="Top" Width="100" Click="SelectDifferentFileButton_Click" Height="22" FontSize="16"/>
                 <Button x:Name="selectFileButton" Content="选择文件" HorizontalAlignment="Right" Margin="0,60,220,0" VerticalAlignment="Top" Width="80" Click="SelectFileButton_Click" Height="22" FontSize="16"/>
                 <Button x:Name="selectAllFileButton" Content="选择所有文件" HorizontalAlignment="Right" Margin="0,60,0,0" VerticalAlignment="Top" Width="100" Click="SelectAllFileButton_Click" Height="22" FontSize="16"/>
-                <ListBox x:Name="fileListBox" Margin="0,100,0,0" Drop="FileListBox_Drop" PreviewMouseRightButtonDown="FileListBox_PreviewMouseRightButtonDown" AllowDrop="True">
+                <ListBox x:Name="fileListBox" Margin="0,100,0,0" Drop="FileListBox_Drop" PreviewMouseRightButtonDown="FileListBox_PreviewMouseRightButtonDown" AllowDrop="True" KeyDown="FileListBox_KeyDown">
                     <ListBox.ContextMenu>
                         <ContextMenu/>
                     </ListBox.ContextMenu>

@@ -4,12 +4,14 @@ using System.Xml.Linq;
 
 namespace Assets.Script.Hotfix.Config.Recorder{namespace}
 {
-    /// <summary>
-    /// 配置
-    /// </summary>
     class {fileName} : RecorderBase
     {
 {Property}
+
+        public override int GetKey()
+        {
+            return {key};
+        }
 
         public override void LoadFromXmlNode(XElement xmlNode)
         {
@@ -20,6 +22,8 @@ namespace Assets.Script.Hotfix.Config.Recorder{namespace}
                 switch (attributeName)
                 {
 {LoadInAttributeFunction}
+                    default:
+                        break;
                 }
             }
             foreach (XElement element in xmlNode.Elements())
@@ -28,6 +32,8 @@ namespace Assets.Script.Hotfix.Config.Recorder{namespace}
                 switch (nodeName)
                 {
 {LoadNodeFunction}
+                    default:
+                        break;
                 }
             }
         }
