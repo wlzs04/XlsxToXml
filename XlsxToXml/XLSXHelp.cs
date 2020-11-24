@@ -253,7 +253,7 @@ namespace XlsxToXml
                         recordNode.Add(keyValueMap);
                         i += mapLength;
                     }
-                    if (propertyClassList[i].classType == "ValueList")
+                    else if (propertyClassList[i].classType == "ValueList")
                     {
                         XElement keyValueList = new XElement(propertyValueNameList[i]);
                         int listLength = Convert.ToInt32(propertyClassList[i].classParam);
