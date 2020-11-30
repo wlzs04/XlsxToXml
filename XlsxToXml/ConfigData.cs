@@ -15,6 +15,7 @@ namespace XlsxToXml
         public bool addInAttribute;
         public bool addInElement;
         public string content;
+        public string split;
     }
 
     /// <summary>
@@ -30,6 +31,7 @@ namespace XlsxToXml
         public string ProjectVersionTool { get; set; } = "git";
         public string CSRecorderTemplateFileRelativePath { get; private set; } = "/CSRecorderTemplate.txt";
         public string CSEnumTemplateFileRelativePath { get; private set; } = "/CSEnumTemplate.txt";
+        public string CSStructTemplateFileRelativePath { get; private set; } = "/CSStructTemplate.txt";
         public string XmlFileName { get; private set; } = "Recorder.xml";
         public string CSFileName { get; private set; } = "Recorder.cs";
         
@@ -97,6 +99,10 @@ namespace XlsxToXml
                 {
                     CSEnumTemplateFileRelativePath = attributeValue;
                 }
+                else if (attributeName == "CSStructTemplateFileRelativePath")
+                {
+                    CSStructTemplateFileRelativePath = attributeValue;
+                }
                 else if (attributeName == "XmlFileName")
                 {
                     XmlFileName = attributeValue;
@@ -114,6 +120,15 @@ namespace XlsxToXml
                         propertyTemplateInfoStruct.addInAttribute = Convert.ToBoolean(CSClassPropertyTemplateElement.Attribute("addInAttribute").Value);
                         propertyTemplateInfoStruct.addInElement = Convert.ToBoolean(CSClassPropertyTemplateElement.Attribute("addInElement").Value);
                         propertyTemplateInfoStruct.content = CSClassPropertyTemplateElement.Value;
+                        XAttribute splitAttribute = CSClassPropertyTemplateElement.Attribute("split");
+                        if (splitAttribute!=null)
+                        {
+                            propertyTemplateInfoStruct.split = splitAttribute.Value;
+                        }
+                        else
+                        {
+                            propertyTemplateInfoStruct.split = "\n";
+                        }
                         CSClassPropertyTemplateMap.Add(CSClassPropertyTemplateElement.Name.LocalName, propertyTemplateInfoStruct);
                     }
                 }

@@ -27,6 +27,10 @@ namespace XlsxToXml
             /// 枚举
             /// </summary>
             Enum,
+            /// <summary>
+            /// 结构体
+            /// </summary>
+            Struct,
         }
 
         struct XlsxPropertyClass
@@ -48,8 +52,10 @@ namespace XlsxToXml
         static Action<string> fileLogCallback = null;
         static string csRecorderTemplateContent = "";
         static string csEnumTemplateContent = "";
+        static string csStructTemplateContent = "";
         string xlsxFilePath = "";
         string fileName = "";
+        string className = "";
         XlsxEnum xlsxType = XlsxEnum.Recorder;
         DataRowCollection xlsxDataRowCollection = null;
         /// <summary>
@@ -72,6 +78,15 @@ namespace XlsxToXml
         /// 配置名称，作为属性名称的注释
         /// </summary>
         List<string> propertyConfigNameList = new List<string>();
+
+        //结构体特有
+        string prefix = "";//前缀
+        string suffix = "";//后缀
+        string split = ";";//分割字符
+        /// <summary>
+        /// 配置默认值，作为属性的默认值
+        /// </summary>
+        List<string> propertyDefaultValueList = new List<string>();
 
         public XLSXFile(string xlsxFilePath)
         {
@@ -107,6 +122,15 @@ namespace XlsxToXml
         }
 
         /// <summary>
+        /// 设置结构体的模板内容
+        /// </summary>
+        /// <param name="content"></param>
+        public static void SetCSStructTemplateContent(string content)
+        {
+            csStructTemplateContent = content;
+        }
+
+        /// <summary>
         /// 读取xlsx文件，只读取第一页(sheet1)的数据
         /// </summary>
         /// <returns></returns>
@@ -114,17 +138,30 @@ namespace XlsxToXml
         {
             FileInfo xlsxFileInfo = new FileInfo(xlsxFilePath);
             fileName = xlsxFileInfo.Name.Substring(0, xlsxFileInfo.Name.LastIndexOf('.'));
-            if(fileName.EndsWith("Recorder"))
+            if(fileName.Contains('.'))
+            {
+                int pointIndex = fileName.LastIndexOf('.');
+                className = fileName.Substring(0,pointIndex);
+                xlsxType = XlsxEnum.Recorder;
+            }
+            else if(fileName.EndsWith("Recorder"))
             {
                 xlsxType = XlsxEnum.Recorder;
+                className = fileName;
             }
             else if(fileName.EndsWith("Enum"))
             {
                 xlsxType = XlsxEnum.Enum;
+                className = fileName;
+            }
+            else if (fileName.EndsWith("Struct"))
+            {
+                xlsxType = XlsxEnum.Struct;
+                className = fileName;
             }
             else
             {
-                fileLogCallback?.Invoke($"xlsx文件：{xlsxFilePath}，只能使用Recorder或Enum结，代表配置或枚举！");
+                fileLogCallback?.Invoke($"xlsx文件：{xlsxFilePath}，只能使用Recorder、Enum、Struct结尾，代表配置、枚举、结构体！");
             }
             FileStream stream = File.Open(xlsxFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
@@ -200,6 +237,11 @@ namespace XlsxToXml
                     fileLogCallback?.Invoke($"xlsx文件：{xlsxFilePath}中列数小于2，为{colCount}，请检查。需要保证一列名称，一列含义。");
                     return;
                 }
+                if (rowCount < 2)
+                {
+                    fileLogCallback?.Invoke($"xlsx文件：{xlsxFilePath}中行数小于2，为{rowCount}，请检查。需要保证至少一行值。");
+                    return;
+                }
                 for (int rowIndex = 1; rowIndex < rowCount; rowIndex++)
                 {
                     object[] itemArray = xlsxDataRowCollection[rowIndex].ItemArray;
@@ -210,6 +252,39 @@ namespace XlsxToXml
                     }
                     propertyValueNameList.Add(itemArray[0].ToString());
                     propertyConfigNameList.Add(itemArray[1].ToString().ToString());
+                }
+            }
+            else if (xlsxType == XlsxEnum.Struct)
+            {
+                if (colCount < 4)
+                {
+                    fileLogCallback?.Invoke($"xlsx文件：{xlsxFilePath}中列数小于4，为{colCount}，请检查。需要保证结构正确。");
+                    return;
+                }
+                if (rowCount < 5)
+                {
+                    fileLogCallback?.Invoke($"xlsx文件：{xlsxFilePath}中行数小于5，为{rowCount}，请检查。需要保证至少一行值。");
+                    return;
+                }
+                prefix = xlsxDataRowCollection[1][0].ToString();
+                suffix = xlsxDataRowCollection[1][1].ToString();
+                split = xlsxDataRowCollection[1][2].ToString();
+                for (int rowIndex = 4; rowIndex < rowCount; rowIndex++)
+                {
+                    object[] itemArray = xlsxDataRowCollection[rowIndex].ItemArray;
+                    if (itemArray.Length < 1 || itemArray[0].ToString() == "")
+                    {
+                        fileLogCallback?.Invoke($"xlsx文件: {xlsxFilePath}表内容出现空值，可能是有意为之或内容未清除彻底，总行数:{rowCount},请核实row:{rowIndex + 1}：");
+                        break;
+                    }
+                    propertyValueNameList.Add(itemArray[0].ToString());
+                    propertyConfigNameList.Add(itemArray[1].ToString());
+                    XlsxPropertyClass propertyClass = new XlsxPropertyClass();
+                    propertyClass.classType = itemArray[2].ToString();
+                    propertyClass.className = propertyClass.classType;
+                    propertyClass.classParam = "";
+                    propertyClassList.Add(propertyClass);
+                    propertyDefaultValueList.Add(itemArray[3].ToString().ToString());
                 }
             }
         }
@@ -230,7 +305,7 @@ namespace XlsxToXml
             //fileLogCallback?.Invoke($"xlsx文件开始导出：{xlsxFilePath} -> {exportXMLFilePath}");
 
             int rowCount = xlsxDataRowCollection.Count;
-            XDocument doc = new XDocument(new XElement(fileName));
+            XDocument doc = new XDocument(new XElement(className));
             for (int rowIndex = 5; rowIndex < rowCount; rowIndex++)
             {
                 object[] itemArray = xlsxDataRowCollection[rowIndex].ItemArray;
@@ -298,6 +373,7 @@ namespace XlsxToXml
         {
             //先将文件名替换为配置名称
             string csFileName = ConfigData.GetSingle().CSFileName.Replace("{fileName}", fileName);
+            csFileName = csFileName.Replace("{className}", className);
             exportCSFilePath = Path.GetDirectoryName(exportCSFilePath) + "/" + csFileName;
             //fileLogCallback?.Invoke($"xlsx文件开始导出：{xlsxFilePath} -> {exportCSFilePath}");
 
@@ -318,8 +394,13 @@ namespace XlsxToXml
                 {
                     csClassContent.Append(csEnumTemplateContent);
                 }
+                else if (xlsxType == XlsxEnum.Struct)
+                {
+                    csClassContent.Append(csStructTemplateContent);
+                }
                 //替换类名
                 csClassContent.Replace("{fileName}", fileName);
+                csClassContent.Replace("{className}", className);
                 //替换命名空间
                 string namespaceString = Path.GetRelativePath(ConfigData.GetSingle().ExportCSAbsolutePath, fileInfo.Directory.FullName);
                 if(namespaceString!=".")
@@ -342,6 +423,12 @@ namespace XlsxToXml
                     {
                         csClassContent.Replace("{key}", "(int)"+propertyValueNameList[0]);
                     }
+                }
+                if(xlsxType == XlsxEnum.Struct)
+                {
+                    csClassContent.Replace("{prefix}", prefix);
+                    csClassContent.Replace("{suffix}", suffix);
+                    csClassContent.Replace("{split}", split);
                 }
                 //替换属性模板
                 Dictionary<string, PropertyTemplateInfoStruct> propertyTemplateMap = ConfigData.GetSingle().CSClassPropertyTemplateMap;
@@ -372,7 +459,14 @@ namespace XlsxToXml
                             //处理换行
                             if (!isFirstAdd)
                             {
-                                propertyTotalContent.Append('\n');
+                                if(propertyTemplateInfoStruct.split=="{split}")
+                                {
+                                    propertyTotalContent.Append(split);
+                                }
+                                else
+                                {
+                                    propertyTotalContent.Append(propertyTemplateInfoStruct.split);
+                                }
                             }
                             isFirstAdd = false;
                             StringBuilder propertyEveryContent = new StringBuilder(propertyTemplateInfoStruct.content);
@@ -431,6 +525,11 @@ namespace XlsxToXml
                             if (propertyValueNameList.Count > 0)
                             {
                                 propertyEveryContent.Replace("{propertyValueName}", propertyValueNameList[i]);
+                            }
+                            if(xlsxType == XlsxEnum.Struct)
+                            {
+                                propertyEveryContent.Replace("{propertyDefaultValue}", propertyDefaultValueList[i]);
+                                propertyEveryContent.Replace("{propertyIndex}", i.ToString());
                             }
                             propertyTotalContent.Append(propertyEveryContent.ToString());
                         }

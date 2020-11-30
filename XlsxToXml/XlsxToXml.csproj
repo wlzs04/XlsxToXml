@@ -30,6 +30,9 @@
     <None Update="CSClassTemplate.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="CSStructTemplate.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="CSEnumTemplate.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

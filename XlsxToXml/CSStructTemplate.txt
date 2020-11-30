@@ -1,0 +1,28 @@
+using System;
+using System.Collections.Generic;
+using System.Xml.Linq;
+
+namespace Assets.Script.Hotfix.Config.Recorder{namespace}
+{
+    struct {className} : IConvertWithString
+    {
+{StructField}
+
+        public void ConvertFromString(string valueString)
+        {
+{StructInitField}
+
+            valueString = valueString.Remove(0,"{prefix}".Length);
+            int suffixLength = "{suffix}".Length;
+            valueString = valueString.Remove(valueString.Length- suffixLength, suffixLength);
+            string[] stringArray = valueString.Split('{split}');
+            int length = stringArray.Length;
+{StructLoadField}
+        }
+
+        public override string ToString()
+        {
+            return "{prefix}"+$"{StructFieldString}"+"{suffix}";
+        }
+    }
+}

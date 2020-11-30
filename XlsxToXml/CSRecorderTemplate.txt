@@ -4,7 +4,7 @@ using System.Xml.Linq;
 
 namespace Assets.Script.Hotfix.Config.Recorder{namespace}
 {
-    class {fileName} : RecorderBase
+    class {className} : RecorderBase
     {
 {Property}
 

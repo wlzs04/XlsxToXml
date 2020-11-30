@@ -6,7 +6,7 @@
   <CSRecorderTemplateFileRelativePath>/CSRecorderTemplate.txt</CSRecorderTemplateFileRelativePath>
   <CSEnumTemplateFileRelativePath>/CSEnumTemplate.txt</CSEnumTemplateFileRelativePath>
   <XmlFileName>{fileName}.xml</XmlFileName>
-  <CSFileName>{fileName}.cs</CSFileName>
+  <CSFileName>{className}.cs</CSFileName>
   <CSClassPropertyTemplateMap>
     <Property addInAttribute="true" addInElement="true"><![CDATA[        /// <summary>
         /// {propertyConfigName} {propertyDescription}
@@ -26,6 +26,17 @@
         /// {propertyConfigName}
         /// </summary>
         {propertyValueName},]]></EunmField>
+    <StructField addInAttribute="true" addInElement="true"><![CDATA[        /// <summary>
+        /// {propertyConfigName}
+        /// </summary>
+        public {propertyClassName} {propertyValueName};]]></StructField>
+    <StructInitField addInAttribute="true" addInElement="true"><![CDATA[            {propertyValueName} = {propertyDefaultValue};]]></StructInitField>
+    <StructLoadField addInAttribute="true" addInElement="true"><![CDATA[            if(length > {propertyIndex})
+            {
+                string attributeValue = stringArray[{propertyIndex}];
+                {propertyValueName} = {convertFunction};
+            }]]></StructLoadField>
+    <StructFieldString addInAttribute="true" addInElement="true" split="{split}"><![CDATA[{{propertyValueName}}]]></StructFieldString>
   </CSClassPropertyTemplateMap>
   <ConvertFunctionTemplateMap>
     <int>Convert.ToInt32(attributeValue);</int>
@@ -33,7 +44,7 @@
     <float>(float)Convert.ToDouble(attributeValue);</float>
     <bool>Convert.ToBoolean(attributeValue);</bool>
     <SplitStringList><![CDATA[new {propertyClassName}();
-                        string[] valueList =  attributeValue.Split('{propertyClassParam1}');
+                        string[] valueList =  attributeValue.Split(new char[] {'{propertyClassParam1}'},StringSplitOptions.RemoveEmptyEntries);
                         foreach (string valueString in valueList)
                         {
                             attributeValue = valueString;
@@ -41,10 +52,10 @@
                             {propertyValueName}.Add(propertyValue);
                         }]]></SplitStringList>
     <SplitStringMap><![CDATA[new {propertyClassName}();
-                        string[] pairList =  attributeValue.Split('{propertyClassParam1}');
+                        string[] pairList =  attributeValue.Split(new char[] {'{propertyClassParam1}'},StringSplitOptions.RemoveEmptyEntries);
                         foreach (string pair in pairList)
                         {
-                            string[] keyValueList =  pair.Split('{propertyClassParam2}');
+                            string[] keyValueList =  pair.Split(new char[] {'{propertyClassParam2}'},StringSplitOptions.RemoveEmptyEntries);
                             attributeValue = keyValueList[0];
                             {propertyClassName1} propertyKey = {convertFunction1}
                             attributeValue = keyValueList[1];
@@ -67,6 +78,6 @@
                             {propertyClassName2} propertyValue = {convertFunction2}
                             {propertyValueName}.Add(propertyKey, propertyValue);
                         }]]></KeyValueMap>
-    <custom>({propertyClassName})Assets.Script.Hotfix.HelpManager.ConvertStringToObjectByType(typeof({propertyClassName}),attributeValue);</custom>
+    <custom>({propertyClassName})HelpManager.ConvertStringToObjectByType(typeof({propertyClassName}),attributeValue);</custom>
   </ConvertFunctionTemplateMap>
 </Config>

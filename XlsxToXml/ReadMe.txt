@@ -26,6 +26,15 @@ ConvertFunctionTemplateMap 根据类型进行转换方法模板map，配置中�
 {propertyConfigName}，配置名称，对应????Recorder.xlsx文件的第5行，????Enum.xlsx文件的第2列
 {convertFunction}，根据{propertyClassName}类型，在ConvertFunctionTemplateMap中替换对应的转换方法，默认使用custom类型的转换方式。
 
+Struct文件特有
+普通参数：
+{prefix}，前缀，string类型，可空
+{suffix}，后缀，string类型，可空
+{split}，分割字符，char类型，不可空
+属性参数：会根据配置列数循环处理
+{propertyIndex}，配置属性索引，自动计算，从0开始
+{propertyDefaultValue}，配置属性默认值
+
 特殊类型：                    说明                             格式要求，例子：                             说明
 SplitStringList    将string类型安分割字符分割组成List    SplitStringList int ;         字符串使用';'进行分割，每个子字符串都是int类型，将值组成list
 SplitStringMap     将string类型安分割字符分割组成Map     SplitStringMap int,bool ;#    字符串先使用';'进行分割组成list，每个子字符串再使用'#'分割成key(int类型)和value(bool类型)，将key和value组成Map
@@ -33,6 +42,7 @@ ValueList          此列后指定个数的列都作为List的子节点  ValueLi
 KeyValueMap        此列后指定个数的列都作为Map的子节点   KeyValueMap int,bool 4        此列的后4列为子节点，他们的配置属性名称作为key，内容作为value，组成Map
 
 .xlsx文件要求
+
 使用????Recorder.xlsx结尾代表配置内容文件，格式要求：
 第1行：是否需要导出，TRUE,FALSE
 第2行：配置属性名称，一般用于代码的属性名称
@@ -40,7 +50,17 @@ KeyValueMap        此列后指定个数的列都作为Map的子节点   KeyValu
 第4行：配置描述，一般用于描述配置的复杂规则，代码的注释
 第5行：配置名称，一般用于描述配置的名称，代码的注释
 第6及以下行：配置内容
+
 使用????Enum.xlsx结尾代表枚举类型文件，格式要求：
 第1行：说明
 第2及以下行：枚举内容
 第1列：名称 第2列：含义
+
+使用????Struct.xlsx结尾代表结构体类型文件，格式要求：
+第1、2行：说明、内容
+第1列：前缀，string类型，可空
+第2列：后缀，string类型，可空
+第3列：分割字符，char类型，不可空
+第3行：空行
+第4及以下行：结构体内容
+第1列：名称 第2列：含义 第3列：类型 第4列：默认值

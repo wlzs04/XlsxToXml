@@ -71,6 +71,17 @@ namespace XlsxToXml
             {
                 Log("缺少CSEnum模板！");
             }
+            if (File.Exists(Environment.CurrentDirectory + configData.CSStructTemplateFileRelativePath))
+            {
+                using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + configData.CSStructTemplateFileRelativePath))
+                {
+                    XLSXFile.SetCSStructTemplateContent(streamReader.ReadToEnd());
+                }
+            }
+            else
+            {
+                Log("缺少CSStruct模板！");
+            }
         }
 
         private void SelectImportXlsxRootPathButton_Click(object sender, RoutedEventArgs e)
