@@ -38,8 +38,10 @@ Struct文件特有
 特殊类型：                    说明                             格式要求，例子：                             说明
 SplitStringList    将string类型安分割字符分割组成List    SplitStringList int ;         字符串使用';'进行分割，每个子字符串都是int类型，将值组成list
 SplitStringMap     将string类型安分割字符分割组成Map     SplitStringMap int,bool ;#    字符串先使用';'进行分割组成list，每个子字符串再使用'#'分割成key(int类型)和value(bool类型)，将key和value组成Map
-ValueList          此列后指定个数的列都作为List的子节点  ValueList int 4               此列的后4列为子节点，他们的内容作为value，安顺序组成List
-KeyValueMap        此列后指定个数的列都作为Map的子节点   KeyValueMap int,bool 4        此列的后4列为子节点，他们的配置属性名称作为key，内容作为value，组成Map
+ValueList          此列后指定个数的列都作为List的子节点   ValueList int 4               此列的后4列为子节点，他们的内容作为value，安顺序组成List
+KeyValueMap        此列后指定个数的列都作为Map的子节点    KeyValueMap int,bool 4        此列的后4列为子节点，他们的配置属性名称作为key，内容作为value，组成Map
+StructList         此列后指定个数的Struct为list的节点，  StructList InstructionStruct 6 2  此列的每4列为一个Struct，Struct作为子节点，共2个Struct，组成List
+StructMap          此列后指定个数的Struct为map的节点，   StructMap BuffInfoStruct 6 2  此列的每4列为一个Struct，Struct作为子节点，每个Struct的第一列作为key，Struct作为value，共2个Struct，组成Map
 
 .xlsx文件要求
 

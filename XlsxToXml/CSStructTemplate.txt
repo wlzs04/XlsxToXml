@@ -24,5 +24,20 @@ namespace Assets.Script.Hotfix.Config.Recorder{namespace}
         {
             return "{prefix}"+$"{StructFieldString}"+"{suffix}";
         }
+
+        public void LoadFromXmlNode(XElement xmlNode)
+        {
+            foreach (XAttribute attribute in xmlNode.Attributes())
+            {
+                string attributeName = attribute.Name.LocalName;
+                string attributeValue = attribute.Value;
+                switch (attributeName)
+                {
+{LoadInAttributeFunction}
+                    default:
+                        break;
+                }
+            }
+        }
     }
 }

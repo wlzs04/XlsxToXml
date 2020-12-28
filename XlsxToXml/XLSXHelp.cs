@@ -320,24 +320,69 @@ namespace XlsxToXml
                     if(propertyClassList[i].classType=="KeyValueMap")
                     {
                         XElement keyValueMap = new XElement(propertyValueNameList[i]);
+                        recordNode.Add(keyValueMap);
                         int mapLength = Convert.ToInt32(propertyClassList[i].classParam);
                         for (int mapIndex = 0; mapIndex < mapLength; mapIndex++)
                         {
                             keyValueMap.Add(new XElement("KeyValue", new XAttribute("key", propertyValueNameList[i + mapIndex + 1]), new XAttribute("value", itemArray[needExportIndexList[i + mapIndex + 1]])));
                         }
-                        recordNode.Add(keyValueMap);
                         i += mapLength;
                     }
                     else if (propertyClassList[i].classType == "ValueList")
                     {
                         XElement keyValueList = new XElement(propertyValueNameList[i]);
+                        recordNode.Add(keyValueList);
                         int listLength = Convert.ToInt32(propertyClassList[i].classParam);
                         for (int listIndex = 0; listIndex < listLength; listIndex++)
                         {
                             keyValueList.Add(new XElement("Value",new XAttribute("value", itemArray[needExportIndexList[i + listIndex + 1]])));
                         }
-                        recordNode.Add(keyValueList);
                         i += listLength;
+                    }
+                    else if(propertyClassList[i].classType == "StructList")
+                    {
+                        XElement structList = new XElement(propertyValueNameList[i]);
+                        recordNode.Add(structList);
+                        string[] paramStringList = propertyClassList[i].classParam.Split(',');
+                        int structLength = Convert.ToInt32(paramStringList[0]);
+                        int mapLength = Convert.ToInt32(paramStringList[1]);
+                        int realMapLength = Convert.ToInt32(itemArray[needExportIndexList[i]]);
+                        for (int mapIndex = 0; mapIndex < realMapLength; mapIndex++)
+                        {
+                            XElement structNode = new XElement(propertyClassList[i].className);
+                            structList.Add(structNode);
+                            for (int structIndex = 0; structIndex < structLength; structIndex++)
+                            {
+                                string attrName = propertyValueNameList[i + mapIndex * structLength + structIndex + 1];
+                                object attrValue = itemArray[needExportIndexList[i + mapIndex * structLength + structIndex + 1]];
+                                XAttribute attribute = new XAttribute(attrName, attrValue);
+                                structNode.Add(attribute);
+                            }
+                        }
+                        i += structLength * mapLength;
+                    }
+                    else if(propertyClassList[i].classType == "StructMap")
+                    {
+                        XElement structMap = new XElement(propertyValueNameList[i]);
+                        recordNode.Add(structMap);
+                        string[] paramStringList = propertyClassList[i].classParam.Split(',');
+                        int structLength = Convert.ToInt32(paramStringList[0]);
+                        int mapLength = Convert.ToInt32(paramStringList[1]);
+                        int realMapLength = Convert.ToInt32(itemArray[needExportIndexList[i]]);
+                        for (int mapIndex = 0; mapIndex < realMapLength; mapIndex++)
+                        {
+                            string nodeName = propertyClassList[i].className.Split(',')[1];
+                            XElement structNode = new XElement(nodeName);
+                            structMap.Add(structNode);
+                            for (int structIndex = 0; structIndex < structLength; structIndex++)
+                            {
+                                string attrName = propertyValueNameList[i + mapIndex * structLength + structIndex + 1];
+                                object attrValue = itemArray[needExportIndexList[i + mapIndex * structLength + structIndex + 1]];
+                                XAttribute attribute = new XAttribute(attrName, attrValue);
+                                structNode.Add(attribute);
+                            }
+                        }
+                        i += structLength* mapLength;
                     }
                     else
                     {
@@ -442,7 +487,11 @@ namespace XlsxToXml
                         bool isInAttribute = true;
                         if(propertyClassList.Count>0)
                         {
-                            isInAttribute = propertyClassList[i].classType != "KeyValueMap" && propertyClassList[i].classType != "ValueList";
+                            isInAttribute = propertyClassList[i].classType != "KeyValueMap" 
+                                && propertyClassList[i].classType != "ValueList"
+                                && propertyClassList[i].classType != "StructList"
+                                && propertyClassList[i].classType != "StructMap"
+                                ;
                         }
                         bool isInElement = !isInAttribute;
                         bool needAdd = false;
@@ -509,6 +558,21 @@ namespace XlsxToXml
                                     propertyEveryContent.Replace("{convertFunction2}", GetConvertFunctionByClassType(propertyClassNameList[1]).Replace("{propertyClassName}", propertyClassNameList[1]));
                                     propertyEveryContent.Replace("{propertyClassName}", $"Dictionary<{propertyClassList[i].className}>");
                                 }
+                                else if (propertyClassList[i].classType == "StructList")
+                                {
+                                    propertyEveryContent.Replace("{convertFunction1}", GetConvertFunctionByClassType(propertyClassList[i].className).Replace("{propertyClassName}", propertyClassList[i].className));
+                                    propertyEveryContent.Replace("{propertyClassName1}", propertyClassList[i].className);
+                                    propertyEveryContent.Replace("{propertyClassName}", $"List<{propertyClassList[i].className}>");
+                                }
+                                else if (propertyClassList[i].classType == "StructMap")
+                                {
+                                    string[] propertyClassNameList = propertyClassList[i].className.Split(',');
+                                    propertyEveryContent.Replace("{propertyClassName1}", propertyClassNameList[0]);
+                                    propertyEveryContent.Replace("{propertyClassName2}", propertyClassNameList[1]);
+                                    propertyEveryContent.Replace("{convertFunction1}", GetConvertFunctionByClassType(propertyClassNameList[0]).Replace("{propertyClassName}", propertyClassNameList[0]));
+                                    propertyEveryContent.Replace("{convertFunction2}", GetConvertFunctionByClassType(propertyClassNameList[1]).Replace("{propertyClassName}", propertyClassNameList[1]));
+                                    propertyEveryContent.Replace("{propertyClassName}", $"Dictionary<{propertyClassList[i].className}>");
+                                }
                                 else
                                 {
                                     propertyEveryContent.Replace("{propertyClassName}", propertyClassList[i].className);
@@ -533,10 +597,17 @@ namespace XlsxToXml
                             }
                             propertyTotalContent.Append(propertyEveryContent.ToString());
                         }
-                        if (propertyClassList.Count>0 && (propertyClassList[i].classType == "KeyValueMap" || propertyClassList[i].classType == "ValueList"))
+                        if (propertyClassList.Count>0 && (propertyClassList[i].classType == "KeyValueMap"|| propertyClassList[i].classType == "ValueList"))
                         {
                             int mapLength = Convert.ToInt32(propertyClassList[i].classParam);
                             i += mapLength;
+                        }
+                        else if(propertyClassList.Count > 0 && (propertyClassList[i].classType == "StructList" || propertyClassList[i].classType == "StructMap"))
+                        {
+                            string[] paramStringList = propertyClassList[i].classParam.Split(',');
+                            int structLength = Convert.ToInt32(paramStringList[0]);
+                            int mapLength = Convert.ToInt32(paramStringList[1]);
+                            i += mapLength * structLength;
                         }
                     }
                     csClassContent.Replace($"{{{property.Key}}}", propertyTotalContent.ToString());
