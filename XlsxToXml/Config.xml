@@ -91,7 +91,7 @@
       <![CDATA[new {propertyClassName}();
                         foreach (XElement keyValueNode in element.Elements())
                         {
-                            string attributeValue = keyValueNode.Attribute("key").Value;
+                            string attributeValue = keyValueNode.Attribute("{structMapKeyName}").Value;
                             {propertyClassName1} propertyKey = {convertFunction1}
                             {propertyClassName2} propertyValue = new {propertyClassName2}();
                             propertyValue.LoadFromXmlNode(keyValueNode);

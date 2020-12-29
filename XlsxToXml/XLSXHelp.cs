@@ -567,6 +567,7 @@ namespace XlsxToXml
                                 else if (propertyClassList[i].classType == "StructMap")
                                 {
                                     string[] propertyClassNameList = propertyClassList[i].className.Split(',');
+                                    propertyEveryContent.Replace("{structMapKeyName}", propertyValueNameList[i+1]);
                                     propertyEveryContent.Replace("{propertyClassName1}", propertyClassNameList[0]);
                                     propertyEveryContent.Replace("{propertyClassName2}", propertyClassNameList[1]);
                                     propertyEveryContent.Replace("{convertFunction1}", GetConvertFunctionByClassType(propertyClassNameList[0]).Replace("{propertyClassName}", propertyClassNameList[0]));

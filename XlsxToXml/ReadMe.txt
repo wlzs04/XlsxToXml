@@ -25,6 +25,7 @@ ConvertFunctionTemplateMap 根据类型进行转换方法模板map，配置中�
 {propertyDescription}，配置描述，对应.xlsx文件的第4行
 {propertyConfigName}，配置名称，对应????Recorder.xlsx文件的第5行，????Enum.xlsx文件的第2列
 {convertFunction}，根据{propertyClassName}类型，在ConvertFunctionTemplateMap中替换对应的转换方法，默认使用custom类型的转换方式。
+{structMapKeyName}，StructMap类型特有，将StructMap类型之后的Struct第一个字段的名称作为map的key
 
 Struct文件特有
 普通参数：
