@@ -333,7 +333,8 @@ namespace XlsxToXml
                         XElement keyValueList = new XElement(propertyValueNameList[i]);
                         recordNode.Add(keyValueList);
                         int listLength = Convert.ToInt32(propertyClassList[i].classParam);
-                        for (int listIndex = 0; listIndex < listLength; listIndex++)
+                        int realListLength = Convert.ToInt32(itemArray[needExportIndexList[i]]);
+                        for (int listIndex = 0; listIndex < realListLength; listIndex++)
                         {
                             keyValueList.Add(new XElement("Value",new XAttribute("value", itemArray[needExportIndexList[i + listIndex + 1]])));
                         }
