@@ -36,7 +36,9 @@
                 string attributeValue = stringArray[{propertyIndex}];
                 {propertyValueName} = {convertFunction};
             }]]></StructLoadField>
-    <StructFieldString addInAttribute="true" addInElement="true" split="{split}"><![CDATA[{{propertyValueName}}]]></StructFieldString>
+    <StructFieldString addInAttribute="true" addInElement="true">
+      <![CDATA[
+            {toStringFunction}]]></StructFieldString>
   </CSClassPropertyTemplateMap>
   <ConvertFunctionTemplateMap>
     <int>Convert.ToInt32(attributeValue);</int>
@@ -78,17 +80,14 @@
                             {propertyClassName2} propertyValue = {convertFunction2}
                             {propertyValueName}.Add(propertyKey, propertyValue);
                         }]]></KeyValueMap>
-    <StructList>
-      <![CDATA[new {propertyClassName}();
+    <StructList><![CDATA[new {propertyClassName}();
                         foreach (XElement keyValueNode in element.Elements())
                         {
                             {propertyClassName1} propertyValue = new {propertyClassName1}();
                             propertyValue.LoadFromXmlNode(keyValueNode);
                             {propertyValueName}.Add(propertyValue);
-                        }]]>
-    </StructList>
-    <StructMap>
-      <![CDATA[new {propertyClassName}();
+                        }]]></StructList>
+    <StructMap><![CDATA[new {propertyClassName}();
                         foreach (XElement keyValueNode in element.Elements())
                         {
                             string attributeValue = keyValueNode.Attribute("{structMapKeyName}").Value;
@@ -96,8 +95,36 @@
                             {propertyClassName2} propertyValue = new {propertyClassName2}();
                             propertyValue.LoadFromXmlNode(keyValueNode);
                             {propertyValueName}.Add(propertyKey, propertyValue);
-                        }]]>
-    </StructMap>
+                        }]]></StructMap>
     <custom>({propertyClassName})HelpManager.ConvertStringToObjectByType(typeof({propertyClassName}),attributeValue);</custom>
   </ConvertFunctionTemplateMap>
+  <ToStringFunctionTemplateMap>
+    <int>stringBuilder.Append($"{{propertyValueName}}{split}");</int>
+    <string>stringBuilder.Append($"{{propertyValueName}}{split}");</string>
+    <float>stringBuilder.Append($"{{propertyValueName}}{split}");</float>
+    <bool>stringBuilder.Append($"{{propertyValueName}}{split}");</bool>
+    <SplitStringList>
+      <![CDATA[foreach (var item in {propertyValueName})
+            {
+                stringBuilder.Append( item.+"{propertyClassParam1}");
+            }
+            if({propertyValueName}.Count>0)
+            {
+                stringBuilder.Remove(stringBuilder.Length - 1, 1);
+            }
+            stringBuilder.Append("{split}");]]>
+    </SplitStringList>
+    <SplitStringMap>
+      <![CDATA[foreach (var item in {propertyValueName})
+            {
+                stringBuilder.Append( item.Key + "{propertyClassParam1}" + item.Value+"{propertyClassParam2}");
+            }
+            if({propertyValueName}.Count>0)
+            {
+                stringBuilder.Remove(stringBuilder.Length - 1, 1);
+            }
+            stringBuilder.Append("{split}");]]>
+    </SplitStringMap>
+    <custom>stringBuilder.Append($"{{propertyValueName}}{split}");</custom>
+  </ToStringFunctionTemplateMap>
 </Config>

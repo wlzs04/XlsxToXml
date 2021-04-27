@@ -346,6 +346,12 @@ namespace XlsxToXml
                     MessageBox.Show("生成文件结束！");
                 });
             }
+            catch (CustomException customException)
+            {
+                MessageBox.Show($"生成文件失败！{currentXlsxFilePath}");
+                Log($"生成文件失败！{currentXlsxFilePath}");
+                Log($"{customException.customMessage}");
+            }
             catch (Exception exception)
             {
                 MessageBox.Show($"生成文件失败！{currentXlsxFilePath}");

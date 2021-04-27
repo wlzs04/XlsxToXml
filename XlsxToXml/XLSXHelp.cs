@@ -280,9 +280,26 @@ namespace XlsxToXml
                     propertyValueNameList.Add(itemArray[0].ToString());
                     propertyConfigNameList.Add(itemArray[1].ToString());
                     XlsxPropertyClass propertyClass = new XlsxPropertyClass();
-                    propertyClass.classType = itemArray[2].ToString();
-                    propertyClass.className = propertyClass.classType;
-                    propertyClass.classParam = "";
+                    string propertyClassString = itemArray[2].ToString();
+                    if (propertyClassString.Contains(' '))
+                    {
+                        string[] propertyClassList = propertyClassString.Split(' ');
+                        propertyClass.classType = propertyClassList[0];
+                        if (propertyClassList.Length > 1)
+                        {
+                            propertyClass.className = propertyClassList[1];
+                        }
+                        if (propertyClassList.Length > 2)
+                        {
+                            propertyClass.classParam = propertyClassList[2];
+                        }
+                    }
+                    else
+                    {
+                        propertyClass.classType = propertyClassString;
+                        propertyClass.className = propertyClassString;
+                        propertyClass.classParam = "";
+                    }
                     propertyClassList.Add(propertyClass);
                     propertyDefaultValueList.Add(itemArray[3].ToString().ToString());
                 }
@@ -324,6 +341,7 @@ namespace XlsxToXml
                         int mapLength = Convert.ToInt32(propertyClassList[i].classParam);
                         for (int mapIndex = 0; mapIndex < mapLength; mapIndex++)
                         {
+                            CheckValueTypeByIndex(rowIndex,i + mapIndex + 1);
                             keyValueMap.Add(new XElement("KeyValue", new XAttribute("key", propertyValueNameList[i + mapIndex + 1]), new XAttribute("value", itemArray[needExportIndexList[i + mapIndex + 1]])));
                         }
                         i += mapLength;
@@ -336,6 +354,7 @@ namespace XlsxToXml
                         int realListLength = Convert.ToInt32(itemArray[needExportIndexList[i]]);
                         for (int listIndex = 0; listIndex < realListLength; listIndex++)
                         {
+                            CheckValueTypeByIndex(rowIndex,i + listIndex+1);
                             keyValueList.Add(new XElement("Value",new XAttribute("value", itemArray[needExportIndexList[i + listIndex + 1]])));
                         }
                         i += listLength;
@@ -356,6 +375,7 @@ namespace XlsxToXml
                             {
                                 string attrName = propertyValueNameList[i + mapIndex * structLength + structIndex + 1];
                                 object attrValue = itemArray[needExportIndexList[i + mapIndex * structLength + structIndex + 1]];
+                                CheckValueTypeByIndex(rowIndex, i + mapIndex * structLength + structIndex + 1);
                                 XAttribute attribute = new XAttribute(attrName, attrValue);
                                 structNode.Add(attribute);
                             }
@@ -379,6 +399,7 @@ namespace XlsxToXml
                             {
                                 string attrName = propertyValueNameList[i + mapIndex * structLength + structIndex + 1];
                                 object attrValue = itemArray[needExportIndexList[i + mapIndex * structLength + structIndex + 1]];
+                                CheckValueTypeByIndex(rowIndex, i + mapIndex * structLength + structIndex + 1);
                                 XAttribute attribute = new XAttribute(attrName, attrValue);
                                 structNode.Add(attribute);
                             }
@@ -387,6 +408,7 @@ namespace XlsxToXml
                     }
                     else
                     {
+                        CheckValueTypeByIndex(rowIndex, i);
                         recordNode.Add(new XAttribute(propertyValueNameList[i], itemArray[needExportIndexList[i]]));
                     }
                 }
@@ -524,6 +546,8 @@ namespace XlsxToXml
                             {
                                 //根据类型替换转换方法模板
                                 propertyEveryContent.Replace("{convertFunction}", GetConvertFunctionByClassType(propertyClassList[i].classType));
+                                propertyEveryContent.Replace("{toStringFunction}", GetStringFunctionByClassType(propertyClassList[i].classType));
+                                propertyEveryContent.Replace("{split}", split);
                                 if (propertyClassList[i].classType == "SplitStringList")
                                 {
                                     propertyEveryContent.Replace("{propertyClassParam1}", propertyClassList[i].classParam);
@@ -632,6 +656,51 @@ namespace XlsxToXml
             else
             {
                 return ConfigData.GetSingle().ConvertFunctionTemplateMap["custom"];
+            }
+        }
+
+        /// <summary>
+        /// 通过类型获得字符串方法
+        /// </summary>
+        /// <param name="classType"></param>
+        string GetStringFunctionByClassType(string classType)
+        {
+            if (ConfigData.GetSingle().ToStringFunctionTemplateMap.ContainsKey(classType))
+            {
+                return ConfigData.GetSingle().ToStringFunctionTemplateMap[classType];
+            }
+            else
+            {
+                return ConfigData.GetSingle().ToStringFunctionTemplateMap["custom"];
+            }
+        }
+
+        /// <summary>
+        /// 检测指定位置的值是否符合类型，失败直接抛异常
+        /// </summary>
+        /// <returns></returns>
+        void CheckValueTypeByIndex(int row, int col)
+        {
+            XlsxPropertyClass xlsxPropertyClass = propertyClassList[col];
+            object value = xlsxDataRowCollection[row][needExportIndexList[col]];
+            try
+            {
+                if (xlsxPropertyClass.classType == "int")
+                {
+                    Convert.ToInt32(value);
+                }
+                else if (xlsxPropertyClass.classType == "float")
+                {
+                    Convert.ToDouble(value);
+                }
+                else if (xlsxPropertyClass.classType == "bool")
+                {
+                    Convert.ToBoolean(value);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new CustomException($"配置:{xlsxFilePath}的第{row+1}行，第{col+1}列，名称:{propertyValueNameList[col]}，类型:{xlsxPropertyClass.classType}，值:{value}，类型检测失败!");
             }
         }
     }

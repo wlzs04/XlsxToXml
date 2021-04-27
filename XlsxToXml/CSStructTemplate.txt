@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Xml.Linq;
 
 namespace Assets.Script.Hotfix.Config.Recorder{namespace}
 {
-    struct {className} : IConvertWithString
+    public struct {className} : IConvertWithString
     {
 {StructField}
 
@@ -21,8 +22,16 @@ namespace Assets.Script.Hotfix.Config.Recorder{namespace}
         }
 
         public override string ToString()
-        {
-            return "{prefix}"+$"{StructFieldString}"+"{suffix}";
+        { 
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append("{prefix}");
+{StructFieldString}
+
+            stringBuilder.Remove(stringBuilder.Length - 1, 1);
+
+            stringBuilder.Append("{suffix}");
+
+            return stringBuilder.ToString();
         }
 
         public void LoadFromXmlNode(XElement xmlNode)

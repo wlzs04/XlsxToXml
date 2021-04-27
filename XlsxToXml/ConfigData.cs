@@ -37,6 +37,7 @@ namespace XlsxToXml
         
         public Dictionary<string, PropertyTemplateInfoStruct> CSClassPropertyTemplateMap { get; private set; } = new Dictionary<string, PropertyTemplateInfoStruct>();
         public Dictionary<string, string> ConvertFunctionTemplateMap { get; private set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> ToStringFunctionTemplateMap { get; private set; } = new Dictionary<string, string>();
 
         string configPath = "";
 
@@ -138,6 +139,14 @@ namespace XlsxToXml
                     foreach (var ConvertFunctionTemplateElement in xElement.Elements())
                     {
                         ConvertFunctionTemplateMap.Add(ConvertFunctionTemplateElement.Name.LocalName, ConvertFunctionTemplateElement.Value);
+                    }
+                }
+                else if(attributeName == "ToStringFunctionTemplateMap")
+                {
+                    ToStringFunctionTemplateMap.Clear();
+                    foreach (var ToStringFunctionTemplateElement in xElement.Elements())
+                    {
+                        ToStringFunctionTemplateMap.Add(ToStringFunctionTemplateElement.Name.LocalName, ToStringFunctionTemplateElement.Value);
                     }
                 }
             }
