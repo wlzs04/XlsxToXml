@@ -700,7 +700,7 @@ namespace XlsxToXml
             }
             catch (Exception e)
             {
-                throw new CustomException($"配置:{xlsxFilePath}的第{row+1}行，第{col+1}列，名称:{propertyValueNameList[col]}，类型:{xlsxPropertyClass.classType}，值:{value}，类型检测失败!");
+                throw new CustomException($"配置:{xlsxFilePath}的第{row}行，第{col}列，名称:{propertyValueNameList[col]}，类型:{xlsxPropertyClass.classType}，值:{value}，类型检测失败!");
             }
         }
     }
