@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="XlsxToXml.CodeInfoControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:XlsxToXml"
+             mc:Ignorable="d" 
+             d:DesignHeight="120" d:DesignWidth="400">
+    <Grid>
+        <CheckBox x:Name="needGenCodeNameCheckBox" Content="代码名称" Margin="0,10,0,0" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsChecked="True" Click="NeedGenCodeNameCheckBox_Click"/>
+
+        <TextBlock HorizontalAlignment="Left" Margin="0,60,0,0" Text="xml根路径：" TextWrapping="Wrap" VerticalAlignment="Top" Width="75" TextAlignment="Center"/>
+        <TextBox x:Name="exportXmlRootPathTextBox" Margin="80,60,155,0" TextWrapping="NoWrap" VerticalAlignment="Top" IsReadOnly="True"/>
+        <Button x:Name="selectExportXmlRootPathButton" Content="选择路径" HorizontalAlignment="Right" Margin="0,60,80,0" VerticalAlignment="Top" Width="70" Click="SelectExportXmlRootPathButton_Click"/>
+        <Button x:Name="openExportXmlRootPathButton" Content="打开路径" HorizontalAlignment="Right" Margin="0,60,5,0" VerticalAlignment="Top" Width="70" Click="OpenExportXmlRootPathButton_Click"/>
+
+        <TextBlock HorizontalAlignment="Left" Margin="0,90,0,0" Text="代码根路径：" TextWrapping="Wrap" VerticalAlignment="Top" Width="75" TextAlignment="Center"/>
+        <TextBox x:Name="exportCodeRootPathTextBox" Margin="80,90,155,0" TextWrapping="NoWrap" VerticalAlignment="Top" IsReadOnly="True"/>
+        <Button x:Name="selectExportCodeRootPathButton" Content="选择路径" HorizontalAlignment="Right" Margin="0,90,80,0" VerticalAlignment="Top" Width="70" Click="SelectExportCodeRootPathButton_Click"/>
+        <Button x:Name="openExportCodeRootPathButton" Content="打开路径" HorizontalAlignment="Right" Margin="0,90,5,0" VerticalAlignment="Top" Width="70" Click="OpenExportCodeRootPathButton_Click"/>
+    </Grid>
+</UserControl>

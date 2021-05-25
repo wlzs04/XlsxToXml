@@ -1,0 +1,6 @@
+package {nameSpaceRootName}{nameSpaceRelativeName};
+
+public enum {className}
+{
+{EunmField}
+}

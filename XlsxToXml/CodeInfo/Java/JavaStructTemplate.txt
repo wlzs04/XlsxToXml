@@ -1,0 +1,27 @@
+package {nameSpaceRootName}{nameSpaceRelativeName};
+
+import org.w3c.dom.Node;
+
+public class {className}
+{
+{StructField}
+
+    public void LoadFromXmlNode(Node xmlNode)
+    {
+        for (int i = 0; i < xmlNode.getChildNodes().getLength(); i++)
+        {
+            Node node = xmlNode.getChildNodes().item(i);
+            if(node.getNodeType()!=Node.TEXT_NODE)
+            {
+                String nodeName = node.getNodeName();
+                String nodeValue = node.getTextContent();
+                switch (nodeName)
+                {
+{LoadNodeFunction}
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+}

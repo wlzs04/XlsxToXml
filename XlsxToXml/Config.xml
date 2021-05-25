@@ -1,51 +1,78 @@
 ﻿<Config>
   <ImportXlsxRelativePath>/..\..\..\..\..\YiSiHoliday\Document\Artres\Config\Recorder\/</ImportXlsxRelativePath>
-  <ExportXmlRelativePath>/..\..\..\..\..\YiSiHoliday\Assets\Artres\Config\Recorder/</ExportXmlRelativePath>
-  <ExportCSRelativePath>/..\..\..\..\..\YiSiHoliday\Assets\Script\Config\Recorder/</ExportCSRelativePath>
   <ProjectVersionTool>git</ProjectVersionTool>
-  <CSRecorderTemplateFileRelativePath>/CSRecorderTemplate.txt</CSRecorderTemplateFileRelativePath>
-  <CSEnumTemplateFileRelativePath>/CSEnumTemplate.txt</CSEnumTemplateFileRelativePath>
-  <XmlFileName>{fileName}.xml</XmlFileName>
-  <CSFileName>{className}.cs</CSFileName>
-  <CSClassPropertyTemplateMap>
-    <Property addInAttribute="true" addInElement="true"><![CDATA[        /// <summary>
+  <CodeConfigDataMap>
+    <CodeConfigData>
+      <CodeName>C#</CodeName>
+      <XmlFileName>{fileName}.xml</XmlFileName>
+      <XmlAttributeFirst>true</XmlAttributeFirst>
+      <XmlRootNodeName>{className}</XmlRootNodeName>
+      <XmlRecorderNodeName>Recorder</XmlRecorderNodeName>
+      <ExportAllXmlToTheSamePath>false</ExportAllXmlToTheSamePath>
+      <ExportXmlRelativePath>/..\..\..\..\..\YiSiHoliday\Assets\Artres\Config\Recorder/</ExportXmlRelativePath>
+      <CodeFileName>{className}.cs</CodeFileName>
+      <ExportCodeRelativePath>/..\..\..\..\..\YiSiHoliday\Assets\Script\Config\Recorder/</ExportCodeRelativePath>
+      <RecorderTemplateFileRelativePath>/CodeInfo/CS/CSRecorderTemplate.txt</RecorderTemplateFileRelativePath>
+      <EnumTemplateFileRelativePath>/CodeInfo/CS/CSEnumTemplate.txt</EnumTemplateFileRelativePath>
+      <StructTemplateFileRelativePath>/CodeInfo/CS/CSStructTemplate.txt</StructTemplateFileRelativePath>
+      <UnknownClassTypeNamePrefix></UnknownClassTypeNamePrefix>
+      <NameSpaceRootName>Assets.Script.Hotfix.Config.Recorder</NameSpaceRootName>
+      <RecorderKeyUnknownClassTypeToInt>(int){key}</RecorderKeyUnknownClassTypeToInt>
+      <ClassTypeInfoMap>
+        <int normalValue="int" classValue="int" isSpecial="false" />
+        <string normalValue="string" classValue="string" isSpecial="false" />
+        <float normalValue="float" classValue="float" isSpecial="false" />
+        <bool normalValue="bool" classValue="bool" isSpecial="false" />
+        <SplitStringList normalValue="List" classValue="List" isSpecial="true" />
+        <SplitStringMap normalValue="Dictionary" classValue="Dictionary" isSpecial="true" />
+        <ValueList normalValue="List" classValue="List" isSpecial="true" />
+        <KeyValueMap normalValue="Dictionary" classValue="Dictionary" isSpecial="true" />
+        <StructList normalValue="List" classValue="List" isSpecial="true" />
+        <StructMap normalValue="Dictionary" classValue="Dictionary" isSpecial="true" />
+        <Vector3 normalValue="UnityEngine.Vector3" classValue="UnityEngine.Vector3" isSpecial="false" />
+        <Vector3Int normalValue="UnityEngine.Vector3Int" classValue="UnityEngine.Vector3Int" isSpecial="false" />
+        <Vector2 normalValue="UnityEngine.Vector2" classValue="UnityEngine.Vector2" isSpecial="false" />
+        <Vector2Int normalValue="UnityEngine.Vector2Int" classValue="UnityEngine.Vector2Int" isSpecial="false" />
+        <Color normalValue="UnityEngine.Color" classValue="UnityEngine.Color" isSpecial="false" />
+      </ClassTypeInfoMap>
+      <ClassPropertyTemplateMap>
+        <Property addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[        /// <summary>
         /// {propertyConfigName} {propertyDescription}
         /// </summary>
         public {propertyClassName} {propertyValueName} { get; private set; }]]></Property>
-    <LoadInAttributeFunction addInAttribute="true" addInElement="false"><![CDATA[                    case "{propertyValueName}":
+        <LoadInAttributeFunction addInAttribute="true" addInElement="false" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[                    case "{propertyValueName}":
                     {
                         {propertyValueName} = {convertFunction}
                         break;
                     }]]></LoadInAttributeFunction>
-    <LoadNodeFunction addInAttribute="false" addInElement="true"><![CDATA[                    case "{propertyValueName}":
+        <LoadNodeFunction addInAttribute="false" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[                    case "{propertyValueName}":
                     {
                         {propertyValueName} = {convertFunction}
                         break;
                     }]]></LoadNodeFunction>
-    <EunmField addInAttribute="true" addInElement="true"><![CDATA[        /// <summary>
+        <EunmField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[        /// <summary>
         /// {propertyConfigName}
         /// </summary>
         {propertyValueName},]]></EunmField>
-    <StructField addInAttribute="true" addInElement="true"><![CDATA[        /// <summary>
+        <StructField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[        /// <summary>
         /// {propertyConfigName}
         /// </summary>
         public {propertyClassName} {propertyValueName};]]></StructField>
-    <StructInitField addInAttribute="true" addInElement="true"><![CDATA[            {propertyValueName} = {propertyDefaultValue};]]></StructInitField>
-    <StructLoadField addInAttribute="true" addInElement="true"><![CDATA[            if(length > {propertyIndex})
+        <StructInitField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[            {propertyValueName} = {propertyDefaultValue};]]></StructInitField>
+        <StructLoadField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[            if(length > {propertyIndex})
             {
                 string attributeValue = stringArray[{propertyIndex}];
-                {propertyValueName} = {convertFunction};
+                {propertyValueName} = {convertFunction}
             }]]></StructLoadField>
-    <StructFieldString addInAttribute="true" addInElement="true">
-      <![CDATA[
+        <StructFieldString addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[
             {toStringFunction}]]></StructFieldString>
-  </CSClassPropertyTemplateMap>
-  <ConvertFunctionTemplateMap>
-    <int>Convert.ToInt32(attributeValue);</int>
-    <string>attributeValue;</string>
-    <float>(float)Convert.ToDouble(attributeValue);</float>
-    <bool>Convert.ToBoolean(attributeValue);</bool>
-    <SplitStringList><![CDATA[new {propertyClassName}();
+      </ClassPropertyTemplateMap>
+      <ConvertFunctionTemplateMap>
+        <int>Convert.ToInt32(attributeValue);</int>
+        <string>attributeValue;</string>
+        <float>Convert.ToSingle(attributeValue);</float>
+        <bool>Convert.ToBoolean(attributeValue);</bool>
+        <SplitStringList><![CDATA[new {propertyClassName}();
                         string[] valueList =  attributeValue.Split(new char[] {'{propertyClassParam1}'},StringSplitOptions.RemoveEmptyEntries);
                         foreach (string valueString in valueList)
                         {
@@ -53,7 +80,7 @@
                             {propertyClassName1} propertyValue = {convertFunction1}
                             {propertyValueName}.Add(propertyValue);
                         }]]></SplitStringList>
-    <SplitStringMap><![CDATA[new {propertyClassName}();
+        <SplitStringMap><![CDATA[new {propertyClassName}();
                         string[] pairList =  attributeValue.Split(new char[] {'{propertyClassParam1}'},StringSplitOptions.RemoveEmptyEntries);
                         foreach (string pair in pairList)
                         {
@@ -64,14 +91,14 @@
                             {propertyClassName2} propertyValue = {convertFunction2}
                             {propertyValueName}.Add(propertyKey,propertyValue);
                         }]]></SplitStringMap>
-    <ValueList><![CDATA[new {propertyClassName}();
+        <ValueList><![CDATA[new {propertyClassName}();
                         foreach (XElement keyValueNode in element.Elements())
                         {
                             string attributeValue = keyValueNode.Attribute("value").Value;
                             {propertyClassName1} propertyValue = {convertFunction1}
                             {propertyValueName}.Add(propertyValue);
                         }]]></ValueList>
-    <KeyValueMap><![CDATA[new {propertyClassName}();
+        <KeyValueMap><![CDATA[new {propertyClassName}();
                         foreach (XElement keyValueNode in element.Elements())
                         {
                             string attributeValue = keyValueNode.Attribute("key").Value;
@@ -80,31 +107,28 @@
                             {propertyClassName2} propertyValue = {convertFunction2}
                             {propertyValueName}.Add(propertyKey, propertyValue);
                         }]]></KeyValueMap>
-    <StructList><![CDATA[new {propertyClassName}();
+        <StructList><![CDATA[new {propertyClassName}();
                         foreach (XElement keyValueNode in element.Elements())
                         {
                             {propertyClassName1} propertyValue = new {propertyClassName1}();
                             propertyValue.LoadFromXmlNode(keyValueNode);
                             {propertyValueName}.Add(propertyValue);
                         }]]></StructList>
-    <StructMap><![CDATA[new {propertyClassName}();
+        <StructMap><![CDATA[new {propertyClassName}();
                         foreach (XElement keyValueNode in element.Elements())
                         {
-                            string attributeValue = keyValueNode.Attribute("{structMapKeyName}").Value;
-                            {propertyClassName1} propertyKey = {convertFunction1}
                             {propertyClassName2} propertyValue = new {propertyClassName2}();
                             propertyValue.LoadFromXmlNode(keyValueNode);
-                            {propertyValueName}.Add(propertyKey, propertyValue);
+                            {propertyValueName}.Add(propertyValue.{structMapKeyName}, propertyValue);
                         }]]></StructMap>
-    <custom>({propertyClassName})HelpManager.ConvertStringToObjectByType(typeof({propertyClassName}),attributeValue);</custom>
-  </ConvertFunctionTemplateMap>
-  <ToStringFunctionTemplateMap>
-    <int>stringBuilder.Append($"{{propertyValueName}}{split}");</int>
-    <string>stringBuilder.Append($"{{propertyValueName}}{split}");</string>
-    <float>stringBuilder.Append($"{{propertyValueName}}{split}");</float>
-    <bool>stringBuilder.Append($"{{propertyValueName}}{split}");</bool>
-    <SplitStringList>
-      <![CDATA[foreach (var item in {propertyValueName})
+        <custom>({propertyClassName})HelpManager.ConvertStringToObjectByType(typeof({propertyClassName}),attributeValue);</custom>
+      </ConvertFunctionTemplateMap>
+      <ToStringFunctionTemplateMap>
+        <int>stringBuilder.Append($"{{propertyValueName}}{split}");</int>
+        <string>stringBuilder.Append($"{{propertyValueName}}{split}");</string>
+        <float>stringBuilder.Append($"{{propertyValueName}}{split}");</float>
+        <bool>stringBuilder.Append($"{{propertyValueName}}{split}");</bool>
+        <SplitStringList><![CDATA[foreach (var item in {propertyValueName})
             {
                 stringBuilder.Append( item.+"{propertyClassParam1}");
             }
@@ -112,10 +136,8 @@
             {
                 stringBuilder.Remove(stringBuilder.Length - 1, 1);
             }
-            stringBuilder.Append("{split}");]]>
-    </SplitStringList>
-    <SplitStringMap>
-      <![CDATA[foreach (var item in {propertyValueName})
+            stringBuilder.Append("{split}");]]></SplitStringList>
+        <SplitStringMap><![CDATA[foreach (var item in {propertyValueName})
             {
                 stringBuilder.Append( item.Key + "{propertyClassParam1}" + item.Value+"{propertyClassParam2}");
             }
@@ -123,8 +145,173 @@
             {
                 stringBuilder.Remove(stringBuilder.Length - 1, 1);
             }
-            stringBuilder.Append("{split}");]]>
-    </SplitStringMap>
-    <custom>stringBuilder.Append($"{{propertyValueName}}{split}");</custom>
-  </ToStringFunctionTemplateMap>
+            stringBuilder.Append("{split}");]]></SplitStringMap>
+        <custom>stringBuilder.Append($"{{propertyValueName}}{split}");</custom>
+      </ToStringFunctionTemplateMap>
+    </CodeConfigData>
+    <CodeConfigData>
+      <CodeName>Java</CodeName>
+      <XmlFileName>Config.Recorder{nameSpaceRelativeName}.{fileName}.xml</XmlFileName>
+      <XmlAttributeFirst>false</XmlAttributeFirst>
+      <XmlRootNodeName>list</XmlRootNodeName>
+      <ExportAllXmlToTheSamePath>true</ExportAllXmlToTheSamePath>
+      <XmlRecorderNodeName>Config.Recorder{nameSpaceRelativeName}.{className}</XmlRecorderNodeName>
+      <ExportXmlRelativePath>/..\..\..\..\..\..\..\Server\Artres\Config\Recorder/</ExportXmlRelativePath>
+      <CodeFileName>{className}.java</CodeFileName>
+      <ExportCodeRelativePath>/..\..\..\..\..\..\..\Server\Script\src\Config\Recorder/</ExportCodeRelativePath>
+      <RecorderTemplateFileRelativePath>/CodeInfo/Java/JavaRecorderTemplate.txt</RecorderTemplateFileRelativePath>
+      <EnumTemplateFileRelativePath>/CodeInfo/Java/JavaEnumTemplate.txt</EnumTemplateFileRelativePath>
+      <StructTemplateFileRelativePath>/CodeInfo/Java/JavaStructTemplate.txt</StructTemplateFileRelativePath>
+      <UnknownClassTypeNamePrefix>Config.Recorder.</UnknownClassTypeNamePrefix>
+      <NameSpaceRootName>Config.Recorder</NameSpaceRootName>
+      <RecorderKeyUnknownClassTypeToInt>{key}.ordinal()</RecorderKeyUnknownClassTypeToInt>
+      <ClassTypeInfoMap>
+        <int normalValue="int" classValue="Integer" isSpecial="false" />
+        <string normalValue="String" classValue="String" isSpecial="false" />
+        <float normalValue="float" classValue="Float" isSpecial="false" />
+        <bool normalValue="boolean" classValue="Boolean" isSpecial="false" />
+        <SplitStringList normalValue="java.util.ArrayList" classValue="java.util.ArrayList" isSpecial="true" />
+        <SplitStringMap normalValue="java.util.HashMap" classValue="java.util.HashMap" isSpecial="true" />
+        <ValueList normalValue="java.util.ArrayList" classValue="java.util.ArrayList" isSpecial="true" />
+        <KeyValueMap normalValue="java.util.HashMap" classValue="java.util.HashMap" isSpecial="true" />
+        <StructList normalValue="java.util.ArrayList" classValue="java.util.ArrayList" isSpecial="true" />
+        <StructMap normalValue="java.util.HashMap" classValue="java.util.HashMap" isSpecial="true" />
+        <Vector3 normalValue="UnityEngine.Vector3" classValue="UnityEngine.Vector3" isSpecial="false" />
+        <Vector3Int normalValue="UnityEngine.Vector3Int" classValue="UnityEngine.Vector3Int" isSpecial="false" />
+        <Vector2 normalValue="UnityEngine.Vector2" classValue="UnityEngine.Vector2" isSpecial="false" />
+        <Vector2Int normalValue="UnityEngine.Vector2Int" classValue="UnityEngine.Vector2Int" isSpecial="false" />
+        <Color normalValue="UnityEngine.Color" classValue="UnityEngine.Color" isSpecial="false" />
+      </ClassTypeInfoMap>
+      <ClassPropertyTemplateMap>
+        <Property addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[        
+    /**
+     * {propertyConfigName} {propertyDescription}
+     */
+    public {propertyClassName} {propertyValueName};]]></Property>
+        <LoadNodeFunction addInAttribute="false" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="false"><![CDATA[                    case "{propertyValueName}":
+                    {
+                        {propertyValueName} = {convertFunction}
+                        break;
+                    }]]></LoadNodeFunction>
+        <EunmField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[    /// <summary>
+    /// {propertyConfigName}
+    /// </summary>
+    {propertyValueName},]]></EunmField>
+        <StructField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[        
+    /**
+     * {propertyConfigName} {propertyDescription}
+     */
+    public {propertyClassName} {propertyValueName};]]></StructField>
+        <StructInitField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[            {propertyValueName} = {propertyDefaultValue};]]></StructInitField>
+        <StructLoadField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[            if(length > {propertyIndex})
+            {
+                string attributeValue = stringArray[{propertyIndex}];
+                {propertyValueName} = {convertFunction}
+            }]]></StructLoadField>
+        <StructFieldString addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[
+            {toStringFunction}]]></StructFieldString>
+      </ClassPropertyTemplateMap>
+      <ConvertFunctionTemplateMap>
+        <int>Integer.parseInt(nodeValue);</int>
+        <string>nodeValue;</string>
+        <float>Float.parseFloat(nodeValue);</float>
+        <bool>Boolean.parseBoolean(nodeValue);</bool>
+        <SplitStringList><![CDATA[new {propertyClassName}();
+                        String[] valueList = logic.util.StrUtil.split(nodeValue, "{propertyClassParam1}");
+                        for (String value: valueList)
+                        {
+                            nodeValue = value;
+                            {propertyClassName1} propertyValue = {convertFunction1};
+                            {propertyValueName}.add(propertyValue);
+                        }]]></SplitStringList>
+        <SplitStringMap><![CDATA[new {propertyClassName}();
+                        String[] pairList =  logic.util.StrUtil.split(nodeValue,"{propertyClassParam1}");
+                        for (String value: pairList)
+                        {
+                            String[] keyValueList =  logic.util.StrUtil.split(value,"{propertyClassParam2}");
+                            nodeValue = keyValueList[0];
+                            {propertyClassName1} propertyKey = {convertFunction1}
+                            nodeValue = keyValueList[1];
+                            {propertyClassName2} propertyValue = {convertFunction2}
+                            {propertyValueName}.put(propertyKey,propertyValue);
+                        }]]></SplitStringMap>
+        <ValueList><![CDATA[new {propertyClassName}();
+                        for (int j = 0; j < node.getChildNodes().getLength(); j++)
+                        {
+                            Node keyNode = node.getChildNodes().item(j);
+                            if(keyNode.getNodeType()==Node.TEXT_NODE)
+                            {
+                                continue;
+                            }
+                            nodeValue = keyNode.getAttributes().getNamedItem("value").getNodeValue();
+                            {propertyClassName1} propertyValue = {convertFunction1}
+                            {propertyValueName}.add(propertyValue);
+                        }]]></ValueList>
+        <KeyValueMap><![CDATA[new {propertyClassName}();
+                        for (int j = 0; j < node.getChildNodes().getLength(); j++)
+                        {
+                            Node keyValueNode = node.getChildNodes().item(j);
+                            if(keyValueNode.getNodeType()==Node.TEXT_NODE)
+                            {
+                                continue;
+                            }
+                            nodeValue = keyValueNode.getAttributes().getNamedItem("key").getNodeValue();
+                            {propertyClassName1} propertyKey = {convertFunction1}
+                            nodeValue = keyValueNode.getAttributes().getNamedItem("value").getNodeValue();
+                            {propertyClassName2} propertyValue = {convertFunction2}
+                            {propertyValueName}.put(propertyKey, propertyValue);
+                        }]]></KeyValueMap>
+        <StructList><![CDATA[new {propertyClassName}();
+                        for (int j = 0; j < node.getChildNodes().getLength(); j++)
+                        {
+                            Node structNode = node.getChildNodes().item(j);
+                            if(structNode.getNodeType()==Node.TEXT_NODE)
+                            {
+                                continue;
+                            }
+                            {propertyClassName1} propertyValue = new {propertyClassName1}();
+                            propertyValue.LoadFromXmlNode(structNode);
+                            {propertyValueName}.add(propertyValue);
+                        }]]></StructList>
+        <StructMap><![CDATA[new {propertyClassName}();
+                        for (int j = 0; j < node.getChildNodes().getLength(); j++)
+                        {
+                            Node structNode = node.getChildNodes().item(j);
+                            if(structNode.getNodeType()==Node.TEXT_NODE)
+                            {
+                                continue;
+                            }
+                            {propertyClassName2} propertyValue = new {propertyClassName2}();
+                            propertyValue.LoadFromXmlNode(structNode);
+                            {propertyValueName}.put(propertyValue.{structMapKeyName}, propertyValue);
+                        }]]></StructMap>
+        <custom>({propertyClassName})logic.start.XStreamHelper.parseString({propertyClassName}.class,nodeValue);</custom>
+      </ConvertFunctionTemplateMap>
+      <ToStringFunctionTemplateMap>
+        <int>stringBuilder.Append($"{{propertyValueName}}{split}");</int>
+        <string>stringBuilder.Append($"{{propertyValueName}}{split}");</string>
+        <float>stringBuilder.Append($"{{propertyValueName}}{split}");</float>
+        <bool>stringBuilder.Append($"{{propertyValueName}}{split}");</bool>
+        <SplitStringList><![CDATA[foreach (var item in {propertyValueName})
+            {
+                stringBuilder.Append( item.+"{propertyClassParam1}");
+            }
+            if({propertyValueName}.Count>0)
+            {
+                stringBuilder.Remove(stringBuilder.Length - 1, 1);
+            }
+            stringBuilder.Append("{split}");]]></SplitStringList>
+        <SplitStringMap><![CDATA[foreach (var item in {propertyValueName})
+            {
+                stringBuilder.Append( item.Key + "{propertyClassParam1}" + item.Value+"{propertyClassParam2}");
+            }
+            if({propertyValueName}.Count>0)
+            {
+                stringBuilder.Remove(stringBuilder.Length - 1, 1);
+            }
+            stringBuilder.Append("{split}");]]></SplitStringMap>
+        <custom>stringBuilder.Append($"{{propertyValueName}}{split}");</custom>
+      </ToStringFunctionTemplateMap>
+    </CodeConfigData>
+  </CodeConfigDataMap>
 </Config>
