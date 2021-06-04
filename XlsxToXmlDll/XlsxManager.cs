@@ -268,11 +268,13 @@ namespace XlsxToXmlDll
                     {
                         Log(false, $"xml配置文件根路径:{configData.CodeConfigDataMap[item.Key].ExportXmlAbsolutePath}不存在！");
                         resultCallback?.Invoke(false);
+                        return;
                     }
                     if (!Directory.Exists(configData.CodeConfigDataMap[item.Key].ExportCodeAbsolutePath))
                     {
                         Log(false, $"{item.Key}代码文件根路径:{configData.CodeConfigDataMap[item.Key].ExportCodeAbsolutePath}不存在！");
                         resultCallback?.Invoke(false);
+                        return;
                     }
                 }
             }
