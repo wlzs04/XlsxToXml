@@ -110,11 +110,6 @@ namespace XlsxToXml
             }
         }
 
-        private void SelectAllFileButton_Click(object sender, RoutedEventArgs e)
-        {
-            AddDirectoryToFileList(importXlsxRootPathTextBox.Text);
-        }
-
         private void FileListBox_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (e.RightButton == MouseButtonState.Pressed)
@@ -128,7 +123,7 @@ namespace XlsxToXml
             fileListBox.Items.Clear();
         }
 
-        private void GenFileButton_Click(object sender, RoutedEventArgs e)
+        private void GenSelectFileButton_Click(object sender, RoutedEventArgs e)
         {
             logRichTextBox.Document.Blocks.Clear();
             if (fileListBox.Items.Count <= 0)
@@ -139,16 +134,22 @@ namespace XlsxToXml
             GenFile();
         }
 
+        private void GenAllFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            logRichTextBox.Document.Blocks.Clear();
+            GenAllFile();
+        }
+
         /// <summary>
         /// 输出日志
         /// </summary>
         /// <param name="isNormal"></param>
         /// <param name="content"></param>
-        void Log(bool isNormal,string content)
+        void Log(bool isNormal,object content)
         {
             logRichTextBox.Dispatcher.BeginInvoke(new Action(() =>
             {
-                logRichTextBox.Document.Blocks.Add(new Paragraph(new Run(content) { Foreground = isNormal ? Brushes.Black:Brushes.Red }));
+                logRichTextBox.Document.Blocks.Add(new Paragraph(new Run(content.ToString()) { Foreground = isNormal ? Brushes.Black:Brushes.Red }));
             }));
         }
 
@@ -158,7 +159,7 @@ namespace XlsxToXml
             {
                 gemFileProgressBar.Value = 100 * percent;
             });
-         }
+        }
 
         /// <summary>
         /// 添加文件夹到列表中
@@ -220,6 +221,21 @@ namespace XlsxToXml
                 fileRelaticePathList.Add(item);
             }
             XlsxManager.GenFile(fileRelaticePathList, (result)=>
+            {
+                if (result)
+                {
+                    MessageBox.Show("生成文件成功！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("生成文件失败！", "提示", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }, ProgressCallback);
+        }
+
+        void GenAllFile()
+        {
+            XlsxManager.GenAllFile((result) =>
             {
                 if (result)
                 {

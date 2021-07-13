@@ -4,7 +4,7 @@ using System.Xml.Linq;
 
 namespace {nameSpaceRootName}{nameSpaceRelativeName}
 {
-    public class {className} : RecorderBase
+    public class {className} : {recorderParentClassName}
     {
 {Property}
 

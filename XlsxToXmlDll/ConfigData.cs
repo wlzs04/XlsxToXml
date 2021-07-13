@@ -50,6 +50,10 @@ namespace XlsxToXmlDll
         /// </summary>
         public bool addIsNotSpecialClassType;
         /// <summary>
+        /// 是否添加父类属性
+        /// </summary>
+        public bool addIsParentProperty;
+        /// <summary>
         /// 内容
         /// </summary>
         public string content;
@@ -81,6 +85,7 @@ namespace XlsxToXmlDll
         public string StructTemplateFileRelativePath { get; set; } = "/../";
         public string UnknownClassTypeNamePrefix { get; set; } = "";
         public string NameSpaceRootName { get; set; } = "";
+        public string DefaultRecorderParentClassName { get; set; } = "";
         public string RecorderKeyUnknownClassTypeToInt { get; set; } = "";
         public Dictionary<string, ClassTypeInfoStruct> ClassTypeInfoMap = new Dictionary<string, ClassTypeInfoStruct>();
         public Dictionary<string, PropertyTemplateInfoStruct> ClassPropertyTemplateMap { get; private set; } = new Dictionary<string, PropertyTemplateInfoStruct>();
@@ -154,6 +159,10 @@ namespace XlsxToXmlDll
                 {
                     NameSpaceRootName = attributeValue;
                 }
+                else if (attributeName == "DefaultRecorderParentClassName")
+                {
+                    DefaultRecorderParentClassName = attributeValue;
+                }
                 else if (attributeName == "RecorderKeyUnknownClassTypeToInt")
                 {
                     RecorderKeyUnknownClassTypeToInt = attributeValue;
@@ -181,6 +190,7 @@ namespace XlsxToXmlDll
                         propertyTemplateInfoStruct.content = CSClassPropertyTemplateElement.Value;
                         propertyTemplateInfoStruct.addIsSpecialClassType = Convert.ToBoolean(CSClassPropertyTemplateElement.Attribute("addIsSpecialClassType").Value);
                         propertyTemplateInfoStruct.addIsNotSpecialClassType = Convert.ToBoolean(CSClassPropertyTemplateElement.Attribute("addIsNotSpecialClassType").Value);
+                        propertyTemplateInfoStruct.addIsParentProperty = Convert.ToBoolean(CSClassPropertyTemplateElement.Attribute("addIsParentProperty").Value);
                         XAttribute splitAttribute = CSClassPropertyTemplateElement.Attribute("split");
                         if (splitAttribute != null)
                         {

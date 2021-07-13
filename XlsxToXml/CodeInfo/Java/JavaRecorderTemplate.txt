@@ -2,7 +2,7 @@ package {nameSpaceRootName}{nameSpaceRelativeName};
 
 import org.w3c.dom.Node;
 
-public class {className}
+public class {className} extends {recorderParentClassName}
 {
 {Property}
 

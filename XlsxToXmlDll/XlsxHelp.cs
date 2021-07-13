@@ -22,9 +22,13 @@ namespace XlsxToXmlDll
         enum XlsxEnum
         {
             /// <summary>
-            /// 配置
+            /// 配置，可以被继承
             /// </summary>
             Recorder,
+            /// <summary>
+            /// 配置父类，可以被继承，与Recorder的区别是不会导出xml文件，只作为配置类定义的定义
+            /// </summary>
+            RecorderBase,
             /// <summary>
             /// 枚举
             /// </summary>
@@ -119,6 +123,7 @@ namespace XlsxToXmlDll
         string xlsxFilePath = "";
         string fileName = "";
         string className = "";
+        XlsxFile parentXlsxFile = null;
         string nameSpaceRelativeName = "";
         XlsxEnum xlsxType = XlsxEnum.Recorder;
         DataRowCollection xlsxDataRowCollection = null;
@@ -161,6 +166,42 @@ namespace XlsxToXmlDll
         }
 
         /// <summary>
+        /// 获得类名
+        /// </summary>
+        /// <param name="codeName"></param>
+        /// <returns></returns>
+        public string GetClassName()
+        {
+            return className;
+        }
+
+        /// <summary>
+        /// 获得相对根路径的类名
+        /// </summary>
+        /// <param name="codeName"></param>
+        /// <returns></returns>
+        public string GetClassRelativeName()
+        {
+            if(nameSpaceRelativeName=="")
+            {
+                return className;
+            }
+            //去掉相对相对路径前的'.'
+            return nameSpaceRelativeName.Remove(0,1) + "." + className;
+        }
+
+        /// <summary>
+        /// 获得完整的类名
+        /// </summary>
+        /// <param name="codeName"></param>
+        /// <returns></returns>
+        public string GetClassFullName(string codeName)
+        {
+            CodeConfigData codeConfigData = ConfigData.GetSingle().CodeConfigDataMap[codeName];
+            return codeConfigData.NameSpaceRootName+nameSpaceRelativeName +"."+ className;
+        }
+
+        /// <summary>
         /// 读取xlsx文件，只读取第一页(sheet1)的数据
         /// </summary>
         /// <returns></returns>
@@ -168,15 +209,29 @@ namespace XlsxToXmlDll
         {
             FileInfo xlsxFileInfo = new FileInfo(xlsxFilePath);
             fileName = xlsxFileInfo.Name.Substring(0, xlsxFileInfo.Name.LastIndexOf('.'));
-            if (fileName.Contains('.'))
+            if (fileName.Contains('_'))
             {
-                int pointIndex = fileName.LastIndexOf('.');
+                int pointIndex = fileName.IndexOf('_');
                 className = fileName.Substring(0, pointIndex);
                 xlsxType = XlsxEnum.Recorder;
+            }
+            else if (fileName.Contains('@'))
+            {
+                int pointIndex = fileName.IndexOf('@');
+                className = fileName.Substring(0, pointIndex);
+                string parentRecorderFileRelativePath = fileName.Substring(pointIndex+1).Replace('.','/');
+                xlsxType = XlsxEnum.Recorder;
+                parentXlsxFile = new XlsxFile(XlsxManager.GetImportXlsxAbsolutePath()+"/"+ parentRecorderFileRelativePath+".xlsx");
+                fileName = className;
             }
             else if (fileName.EndsWith("Recorder"))
             {
                 xlsxType = XlsxEnum.Recorder;
+                className = fileName;
+            }
+            else if (fileName.EndsWith("RecorderBase"))
+            {
+                xlsxType = XlsxEnum.RecorderBase;
                 className = fileName;
             }
             else if (fileName.EndsWith("Enum"))
@@ -211,7 +266,7 @@ namespace XlsxToXmlDll
             int rowCount = xlsxDataRowCollection.Count;
             int colCount = xlsxDataRowCollection[0].ItemArray.Length;
 
-            if (xlsxType == XlsxEnum.Recorder)
+            if (xlsxType == XlsxEnum.Recorder || xlsxType == XlsxEnum.RecorderBase)
             {
                 if (rowCount < 5)
                 {
@@ -255,6 +310,46 @@ namespace XlsxToXmlDll
 
                     //xlsx文件格式：第五行，为配置名称，作为属性名称的注释
                     propertyConfigNameList.Add(xlsxDataRowCollection[4][exportInfo.index].ToString());
+                }
+                //检测配置定义结构
+                //判断属性名称重复
+                List<string> tempPropertyValueNameList = new List<string>();
+                for (int i = 0; i < propertyClassList.Count; i++)
+                {
+                    string propertyName = propertyValueNameList[i];
+                    if (!tempPropertyValueNameList.Contains(propertyName))
+                    {
+                        tempPropertyValueNameList.Add(propertyName);
+                    }
+                    else
+                    {
+                        throw new CustomException($"配置文件:{xlsxFilePath}属性名称:{propertyName}重复定义。");
+                    }
+                    //因为存在特殊list和map类型，需要判断跳过
+                    if (propertyClassList[i].classType == "ValueList")
+                    {
+                        int listLength = Convert.ToInt32(propertyClassList[i].classParameter);
+                        i += listLength;
+                    }
+                    else if (propertyClassList[i].classType == "KeyValueMap")
+                    {
+                        int mapLength = Convert.ToInt32(propertyClassList[i].classParameter);
+                        i += mapLength;
+                    }
+                    else if (propertyClassList[i].classType == "StructList")
+                    {
+                        string[] paramStringList = propertyClassList[i].classParameter.Split(',');
+                        int structLength = Convert.ToInt32(paramStringList[0]);
+                        int mapLength = Convert.ToInt32(paramStringList[1]);
+                        i += structLength * mapLength;
+                    }
+                    else if (propertyClassList[i].classType == "StructMap")
+                    {
+                        string[] paramStringList = propertyClassList[i].classParameter.Split(',');
+                        int structLength = Convert.ToInt32(paramStringList[0]);
+                        int mapLength = Convert.ToInt32(paramStringList[1]);
+                        i += structLength * mapLength;
+                    }
                 }
             }
             else if (xlsxType == XlsxEnum.Enum)
@@ -313,6 +408,10 @@ namespace XlsxToXmlDll
                     propertyDefaultValueList.Add(itemArray[3].ToString().ToString());
                 }
             }
+            else
+            {
+                XlsxManager.Log(false, $"xlsx文件：{xlsxFilePath}为未处理xlsx类型：{xlsxType}");
+            }
         }
 
         /// <summary>
@@ -328,7 +427,7 @@ namespace XlsxToXmlDll
                 propertyClass.RefreshInfo(this, false);
             }
             //先判断当前配置的是否需要导出当前语言
-            if (xlsxType == XlsxEnum.Recorder)
+            if (xlsxType == XlsxEnum.Recorder || xlsxType == XlsxEnum.RecorderBase)
             {
                 bool needExport = false;
                 foreach (var item in needExportInfoList)
@@ -388,10 +487,6 @@ namespace XlsxToXmlDll
 
         void DeleteXml(string xlsxFileRelativePath)
         {
-            if (xlsxType != XlsxEnum.Recorder)
-            {
-                return;
-            }
             string exportXmlFilePath = GetXmlPathByXlsxRelativePath(xlsxFileRelativePath);
             if (File.Exists(exportXmlFilePath))
             {
@@ -451,6 +546,10 @@ namespace XlsxToXmlDll
                         recordNode.Add(keyValueList);
                         int listLength = Convert.ToInt32(propertyClassList[i].classParameter);
                         int realListLength = Convert.ToInt32(itemArray[needExportInfoList[i].index]);
+                        if (realListLength > listLength)
+                        {
+                            throw new CustomException($"xlsx文件:{xlsxFilePath} row:{rowIndex + 1} 属性:{propertyValueNameList[i]}的长度{realListLength}大于定义{listLength}");
+                        }
                         for (int listIndex = 0; listIndex < realListLength; listIndex++)
                         {
                             CheckValueTypeByIndex(rowIndex, i + listIndex + 1);
@@ -481,17 +580,21 @@ namespace XlsxToXmlDll
                         recordNode.Add(structList);
                         string[] paramStringList = propertyClassList[i].classParameter.Split(',');
                         int structLength = Convert.ToInt32(paramStringList[0]);
-                        int mapLength = Convert.ToInt32(paramStringList[1]);
-                        int realMapLength = Convert.ToInt32(itemArray[needExportInfoList[i].index]);
-                        for (int mapIndex = 0; mapIndex < realMapLength; mapIndex++)
+                        int listLength = Convert.ToInt32(paramStringList[1]);
+                        int realListLength = Convert.ToInt32(itemArray[needExportInfoList[i].index]);
+                        if (realListLength > listLength)
+                        {
+                            throw new CustomException($"xlsx文件:{xlsxFilePath} row:{rowIndex + 1} 属性:{propertyValueNameList[i]}的长度{realListLength}大于定义{listLength}");
+                        }
+                        for (int listIndex = 0; listIndex < realListLength; listIndex++)
                         {
                             XElement structNode = new XElement(propertyClassList[i].childXlsxPropertyClassList[0].className);
                             structList.Add(structNode);
                             for (int structIndex = 0; structIndex < structLength; structIndex++)
                             {
-                                string attrName = propertyValueNameList[i + mapIndex * structLength + structIndex + 1];
-                                object attrValue = itemArray[needExportInfoList[i + mapIndex * structLength + structIndex + 1].index];
-                                CheckValueTypeByIndex(rowIndex, i + mapIndex * structLength + structIndex + 1);
+                                string attrName = propertyValueNameList[i + listIndex * structLength + structIndex + 1];
+                                object attrValue = itemArray[needExportInfoList[i + listIndex * structLength + structIndex + 1].index];
+                                CheckValueTypeByIndex(rowIndex, i + listIndex * structLength + structIndex + 1);
                                 if (codeConfigData.XmlAttributeFirst)
                                 {
                                     XAttribute attribute = new XAttribute(attrName, attrValue);
@@ -504,7 +607,7 @@ namespace XlsxToXmlDll
                                 }
                             }
                         }
-                        i += structLength * mapLength;
+                        i += structLength * listLength;
                     }
                     else if (propertyClassList[i].classType == "StructMap")
                     {
@@ -514,6 +617,10 @@ namespace XlsxToXmlDll
                         int structLength = Convert.ToInt32(paramStringList[0]);
                         int mapLength = Convert.ToInt32(paramStringList[1]);
                         int realMapLength = Convert.ToInt32(itemArray[needExportInfoList[i].index]);
+                        if (realMapLength > mapLength)
+                        {
+                            throw new CustomException($"xlsx文件:{xlsxFilePath} row:{rowIndex + 1} 属性:{propertyValueNameList[i]}的长度{realMapLength}大于定义{mapLength}");
+                        }
                         for (int mapIndex = 0; mapIndex < realMapLength; mapIndex++)
                         {
                             XElement structNode = new XElement(propertyClassList[i].childXlsxPropertyClassList[1].className);
@@ -590,7 +697,7 @@ namespace XlsxToXmlDll
                 using (StreamWriter streamWriter = new StreamWriter(fileStream))
                 {
                     StringBuilder csClassContent = new StringBuilder();
-                    if (xlsxType == XlsxEnum.Recorder)
+                    if (xlsxType == XlsxEnum.Recorder || xlsxType == XlsxEnum.RecorderBase)
                     {
                         csClassContent.Append(codeConfigData.RecorderTemplateContent);
                     }
@@ -602,6 +709,10 @@ namespace XlsxToXmlDll
                     {
                         csClassContent.Append(codeConfigData.StructTemplateContent);
                     }
+                    else
+                    {
+                        XlsxManager.Log(false, $"xlsx文件：{xlsxFilePath}为未处理xlsx类型：{xlsxType}");
+                    }
                     //替换类名
                     csClassContent.Replace("{fileName}", fileName);
                     csClassContent.Replace("{className}", className);
@@ -609,6 +720,8 @@ namespace XlsxToXmlDll
                     csClassContent.Replace("{nameSpaceRootName}", codeConfigData.NameSpaceRootName);
                     //替换命名空间
                     csClassContent.Replace("{nameSpaceRelativeName}", nameSpaceRelativeName);
+                    //替换Recorder父类名称
+                    csClassContent.Replace("{recorderParentClassName}", parentXlsxFile != null? parentXlsxFile.GetClassFullName(codeConfigData.CodeName) : codeConfigData.DefaultRecorderParentClassName);
                     //替换索引
                     if (propertyClassList.Count > 0 && propertyValueNameList.Count > 0)
                     {
@@ -633,7 +746,7 @@ namespace XlsxToXmlDll
                         bool isFirstAdd = true;
                         for (int i = 0; i < propertyValueNameList.Count; i++)
                         {
-                            if (xlsxType == XlsxEnum.Recorder)
+                            if (xlsxType == XlsxEnum.Recorder || xlsxType == XlsxEnum.RecorderBase)
                             {
                                 if (!needExportInfoList[i].exportCodeNameList.Contains(codeConfigData.CodeName))
                                 {
@@ -673,6 +786,10 @@ namespace XlsxToXmlDll
                             if (isInElement && propertyTemplateInfoStruct.addInElement)
                             {
                                 needAdd = true;
+                            }
+                            if (!propertyTemplateInfoStruct.addIsParentProperty && CheckIsParentProperty(propertyValueNameList[i]))
+                            {
+                                needAdd = false;
                             }
                             if (needAdd)
                             {
@@ -799,8 +916,12 @@ namespace XlsxToXmlDll
         {
             XElement node = new XElement(fileName);
             node.Add(new XAttribute("className", className));
+            if (parentXlsxFile!=null)
+            {
+                node.Add(new XAttribute("parentClassRelativeName", parentXlsxFile.GetClassRelativeName()));
+            }
             node.Add(new XAttribute("xlsxType", xlsxType));
-            if (xlsxType == XlsxEnum.Recorder)
+            if (xlsxType == XlsxEnum.Recorder || xlsxType == XlsxEnum.RecorderBase)
             {
                 for (int i = 0; i < needExportInfoList.Count; i++)
                 {
@@ -856,6 +977,10 @@ namespace XlsxToXmlDll
                 {
                     node.Add(new XElement(propertyValueNameList[i], propertyConfigNameList[i]));
                 }
+            }
+            else
+            {
+                XlsxManager.Log(false, $"xlsx文件：{xlsxFilePath}为未处理xlsx类型：{xlsxType}");
             }
             return node;
         }
@@ -966,6 +1091,23 @@ namespace XlsxToXmlDll
             catch
             {
                 throw new CustomException($"配置:{xlsxFilePath}的第{row}行，第{col}列，名称:{propertyValueNameList[col]}，类型:{xlsxPropertyClass.classType}，值:{value}，类型检测失败!");
+            }
+        }
+
+        /// <summary>
+        /// 判断属性是否是父类的属性
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
+        bool CheckIsParentProperty(string propertyValueName)
+        {
+            if (parentXlsxFile==null)
+            {
+                return false;
+            }
+            else
+            {
+                return parentXlsxFile.propertyValueNameList.Contains(propertyValueName);
             }
         }
     }

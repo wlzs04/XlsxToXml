@@ -17,6 +17,7 @@
       <StructTemplateFileRelativePath>/CodeInfo/CS/CSStructTemplate.txt</StructTemplateFileRelativePath>
       <UnknownClassTypeNamePrefix></UnknownClassTypeNamePrefix>
       <NameSpaceRootName>Assets.Script.Hotfix.Config.Recorder</NameSpaceRootName>
+      <DefaultRecorderParentClassName>RecorderBase</DefaultRecorderParentClassName>
       <RecorderKeyUnknownClassTypeToInt>(int){key}</RecorderKeyUnknownClassTypeToInt>
       <ClassTypeInfoMap>
         <int normalValue="int" classValue="int" isSpecial="false" />
@@ -36,35 +37,35 @@
         <Color normalValue="UnityEngine.Color" classValue="UnityEngine.Color" isSpecial="false" />
       </ClassTypeInfoMap>
       <ClassPropertyTemplateMap>
-        <Property addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[        /// <summary>
+        <Property addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="false"><![CDATA[        /// <summary>
         /// {propertyConfigName} {propertyDescription}
         /// </summary>
-        public {propertyClassName} {propertyValueName} { get; private set; }]]></Property>
-        <LoadInAttributeFunction addInAttribute="true" addInElement="false" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[                    case "{propertyValueName}":
+        public {propertyClassName} {propertyValueName} { get; protected set; }]]></Property>
+        <LoadInAttributeFunction addInAttribute="true" addInElement="false" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[                    case "{propertyValueName}":
                     {
                         {propertyValueName} = {convertFunction}
                         break;
                     }]]></LoadInAttributeFunction>
-        <LoadNodeFunction addInAttribute="false" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[                    case "{propertyValueName}":
+        <LoadNodeFunction addInAttribute="false" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[                    case "{propertyValueName}":
                     {
                         {propertyValueName} = {convertFunction}
                         break;
                     }]]></LoadNodeFunction>
-        <EunmField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[        /// <summary>
+        <EunmField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[        /// <summary>
         /// {propertyConfigName}
         /// </summary>
         {propertyValueName},]]></EunmField>
-        <StructField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[        /// <summary>
+        <StructField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[        /// <summary>
         /// {propertyConfigName}
         /// </summary>
         public {propertyClassName} {propertyValueName};]]></StructField>
-        <StructInitField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[            {propertyValueName} = {propertyDefaultValue};]]></StructInitField>
-        <StructLoadField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[            if(length > {propertyIndex})
+        <StructInitField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[            {propertyValueName} = {propertyDefaultValue};]]></StructInitField>
+        <StructLoadField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[            if(length > {propertyIndex})
             {
                 string attributeValue = stringArray[{propertyIndex}];
                 {propertyValueName} = {convertFunction}
             }]]></StructLoadField>
-        <StructFieldString addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[
+        <StructFieldString addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[
             {toStringFunction}]]></StructFieldString>
       </ClassPropertyTemplateMap>
       <ConvertFunctionTemplateMap>
@@ -164,6 +165,7 @@
       <StructTemplateFileRelativePath>/CodeInfo/Java/JavaStructTemplate.txt</StructTemplateFileRelativePath>
       <UnknownClassTypeNamePrefix>Config.Recorder.</UnknownClassTypeNamePrefix>
       <NameSpaceRootName>Config.Recorder</NameSpaceRootName>
+      <DefaultRecorderParentClassName>RecorderBase</DefaultRecorderParentClassName>
       <RecorderKeyUnknownClassTypeToInt>{key}.ordinal()</RecorderKeyUnknownClassTypeToInt>
       <ClassTypeInfoMap>
         <int normalValue="int" classValue="Integer" isSpecial="false" />
@@ -183,32 +185,32 @@
         <Color normalValue="UnityEngine.Color" classValue="UnityEngine.Color" isSpecial="false" />
       </ClassTypeInfoMap>
       <ClassPropertyTemplateMap>
-        <Property addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[        
+        <Property addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="false"><![CDATA[        
     /**
      * {propertyConfigName} {propertyDescription}
      */
     public {propertyClassName} {propertyValueName};]]></Property>
-        <LoadNodeFunction addInAttribute="false" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="false"><![CDATA[                    case "{propertyValueName}":
+        <LoadNodeFunction addInAttribute="false" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="false" addIsParentProperty="true"><![CDATA[                    case "{propertyValueName}":
                     {
                         {propertyValueName} = {convertFunction}
                         break;
                     }]]></LoadNodeFunction>
-        <EunmField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[    /// <summary>
+        <EunmField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[    /// <summary>
     /// {propertyConfigName}
     /// </summary>
     {propertyValueName},]]></EunmField>
-        <StructField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[        
+        <StructField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[        
     /**
      * {propertyConfigName} {propertyDescription}
      */
     public {propertyClassName} {propertyValueName};]]></StructField>
-        <StructInitField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[            {propertyValueName} = {propertyDefaultValue};]]></StructInitField>
-        <StructLoadField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[            if(length > {propertyIndex})
+        <StructInitField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[            {propertyValueName} = {propertyDefaultValue};]]></StructInitField>
+        <StructLoadField addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[            if(length > {propertyIndex})
             {
                 string attributeValue = stringArray[{propertyIndex}];
                 {propertyValueName} = {convertFunction}
             }]]></StructLoadField>
-        <StructFieldString addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true"><![CDATA[
+        <StructFieldString addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[
             {toStringFunction}]]></StructFieldString>
       </ClassPropertyTemplateMap>
       <ConvertFunctionTemplateMap>

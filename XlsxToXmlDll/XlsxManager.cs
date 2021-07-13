@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OfficeOpenXml;
+using OfficeOpenXml.Drawing;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +13,7 @@ namespace XlsxToXmlDll
 {
     public class XlsxManager
     {
-        static Action<bool,string> logCallback = null;
+        static Action<bool,object> logCallback = null;
 
         /// <summary>
         /// 工具根路径
@@ -23,7 +25,7 @@ namespace XlsxToXmlDll
         /// </summary>
         /// <param name="toolRootPath"></param>
         /// <param name="logCallback"></param>
-        public static void Init(string toolRootPath, Action<bool,string> logCallback)
+        public static void Init(string toolRootPath, Action<bool, object> logCallback)
         {
             UnInit();
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -45,7 +47,7 @@ namespace XlsxToXmlDll
         /// </summary>
         /// <param name="isNormal"></param>
         /// <param name="content"></param>
-        public static void Log(bool isNormal,string content)
+        public static void Log(bool isNormal,object content)
         {
             logCallback?.Invoke(isNormal,content);
         }
@@ -153,8 +155,7 @@ namespace XlsxToXmlDll
             catch (Exception exception)
             {
                 Log(false, "选择差异文件失败！可能是没有在配置文件Config.xml中的ProjectVersionTool属性设置svn或git，又或者是安装svn或git时没添加命令行工具。");
-                Log(false, exception.Message);
-                Log(false, exception.StackTrace);
+                Log(false, exception);
                 throw;
             }
             return fileRelaticePathList;
@@ -252,7 +253,7 @@ namespace XlsxToXmlDll
         }
 
         /// <summary>
-        /// 生成文件
+        /// 生成指定文件
         /// </summary>
         /// <param name="fileRelaticePathList"></param>
         /// <param name="resultCallback"></param>
@@ -264,17 +265,17 @@ namespace XlsxToXmlDll
             {
                 if (item.Value.NeedExport)
                 {
-                    if (!Directory.Exists(configData.CodeConfigDataMap[item.Key].ExportXmlAbsolutePath))
+                    if (!Directory.Exists(item.Value.ExportXmlAbsolutePath))
                     {
-                        Log(false, $"xml配置文件根路径:{configData.CodeConfigDataMap[item.Key].ExportXmlAbsolutePath}不存在！");
+                        Log(false, $"xml配置文件根路径:{item.Value.ExportXmlAbsolutePath}不存在！");
                         resultCallback?.Invoke(false);
-                        return;
+						return;
                     }
-                    if (!Directory.Exists(configData.CodeConfigDataMap[item.Key].ExportCodeAbsolutePath))
+                    if (!Directory.Exists(item.Value.ExportCodeAbsolutePath))
                     {
-                        Log(false, $"{item.Key}代码文件根路径:{configData.CodeConfigDataMap[item.Key].ExportCodeAbsolutePath}不存在！");
+                        Log(false, $"{item.Key}代码文件根路径:{item.Value.ExportCodeAbsolutePath}不存在！");
                         resultCallback?.Invoke(false);
-                        return;
+						return;
                     }
                 }
             }
@@ -315,10 +316,116 @@ namespace XlsxToXmlDll
             catch (Exception exception)
             {
                 Log(false, $"生成文件失败！{currentXlsxFilePath}");
-                Log(false, exception.Message);
-                Log(false, exception.StackTrace);
+                Log(false, exception);
                 resultCallback?.Invoke(false);
             }
+        }
+
+        /// <summary>
+        /// 生成所有文件
+        /// </summary>
+        /// <param name="resultCallback"></param>
+        /// <param name="progressCallback"></param>
+        public static void GenAllFile(Action<bool> resultCallback, Action<float> progressCallback)
+        {
+            ConfigData configData = ConfigData.GetSingle();
+            foreach (var item in configData.CodeConfigDataMap)
+            {
+                if (item.Value.NeedExport)
+                {
+                    if (!Directory.Exists(item.Value.ExportXmlAbsolutePath))
+                    {
+                        Log(false, $"xml配置文件根路径:{item.Value.ExportXmlAbsolutePath}不存在！");
+                        resultCallback?.Invoke(false);
+                        return;
+                    }
+                    if (!Directory.Exists(item.Value.ExportCodeAbsolutePath))
+                    {
+                        Log(false, $"{item.Key}代码文件根路径:{item.Value.ExportCodeAbsolutePath}不存在！");
+                        resultCallback?.Invoke(false);
+                        return;
+                    }
+                }
+            }
+            progressCallback?.Invoke(0);
+            int finishFileNumber = 0;
+            string currentXlsxFilePath = "";
+            try
+            {
+                Task.Run(() =>
+                {
+                    Log(true, $"开始删除文件所有文件!");
+                    foreach (var item in configData.CodeConfigDataMap)
+                    {
+                        if (item.Value.NeedExport)
+                        {
+                            Directory.Delete(item.Value.ExportXmlAbsolutePath,true);
+                            Directory.CreateDirectory(item.Value.ExportXmlAbsolutePath);
+                            Directory.Delete(item.Value.ExportCodeAbsolutePath, true);
+                            Directory.CreateDirectory(item.Value.ExportCodeAbsolutePath);
+                        }
+                    }
+                    Log(true, $"开始生成文件！");
+                    List<string> fileRelaticePathList = GetDirectoryXlsxFileRelativeList(GetImportXlsxAbsolutePath());
+                    foreach (string xlsxFileRelativePath in fileRelaticePathList)
+                    {
+                        string xlsxFilePath = GetImportXlsxAbsolutePath() + "/" + xlsxFileRelativePath;
+                        currentXlsxFilePath = xlsxFilePath;
+
+                        XlsxFile xlsxFile = new XlsxFile(xlsxFilePath);
+                        foreach (var item in configData.CodeConfigDataMap)
+                        {
+                            if (item.Value.NeedExport)
+                            {
+                                xlsxFile.Export(item.Key, xlsxFileRelativePath);
+                            }
+                        }
+                        finishFileNumber++;
+                        progressCallback?.Invoke((float)finishFileNumber / fileRelaticePathList.Count);
+                    }
+                    Log(true, $"生成文件结束！");
+                    resultCallback?.Invoke(true);
+                });
+            }
+            catch (CustomException customException)
+            {
+                Log(false, $"生成文件失败！{currentXlsxFilePath}");
+                Log(false, $"{customException.customMessage}");
+                resultCallback?.Invoke(false);
+            }
+            catch (Exception exception)
+            {
+                Log(false, $"生成文件失败！{currentXlsxFilePath}");
+                Log(false, exception);
+                resultCallback?.Invoke(false);
+            }
+
+        }
+
+        /// <summary>
+        /// 添加文件夹到列表中
+        /// </summary>
+        /// <param name="directoryPath"></param>
+        public static List<string> GetDirectoryXlsxFileRelativeList(string directoryPath)
+        {
+            List<string> fileRelativeList = new List<string>();
+            if (Directory.Exists(directoryPath))
+            {
+                DirectoryInfo directoryInfo = new DirectoryInfo(directoryPath);
+                foreach (FileInfo fileInfo in directoryInfo.GetFiles())
+                {
+                    if (CheckIsXlsxFile(fileInfo.FullName))
+                    {
+                        string fileRelativePath = GetRelativePath(GetImportXlsxAbsolutePath(), fileInfo.FullName);
+                        fileRelativeList.Add(fileRelativePath);
+                    }
+                }
+                foreach (DirectoryInfo childDirectoryInfo in directoryInfo.GetDirectories())
+                {
+                    fileRelativeList.AddRange(GetDirectoryXlsxFileRelativeList(childDirectoryInfo.FullName));
+                }
+            }
+            return fileRelativeList;
         }
 
         /// <summary>
@@ -371,7 +478,7 @@ namespace XlsxToXmlDll
         }
 
         /// <summary>
-        /// 获得两个文件的相对路径，因为Path.GetRelativePath在.net core2之后再有，所以临时使用，判断规则和返回值有可能有问题
+        /// 获得两个文件的相对路径，因为Path.GetRelativePath在.net core2之后才有，所以临时使用，判断规则和返回值有可能有问题
         /// </summary>
         /// <param name="fromPath"></param>
         /// <param name="toPath"></param>
@@ -412,6 +519,27 @@ namespace XlsxToXmlDll
         public static string GetToolRootPath()
         {
             return toolRootPath;
+        }
+
+        public static void Test()
+        {
+            string imageRootPath = @"C:\Users\1\Desktop\Image\";
+            DirectoryInfo directoryInfo = new DirectoryInfo(imageRootPath);
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            using (ExcelPackage package = new ExcelPackage(new FileInfo(@"C:\Users\1\Desktop\test.xlsx")))
+            {
+                ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("test");//创建worksheet
+                int index = 0;
+                foreach (var item in directoryInfo.GetFiles())
+                {
+                    ExcelPicture picture = worksheet.Drawings.AddPicture(index.ToString(), item);
+                    picture.From.Column = 1;
+                    picture.From.Row = index;
+                    picture.SetSize(100, 100);
+                    index++;
+                }
+                package.Save();
+            }
         }
     }
 }

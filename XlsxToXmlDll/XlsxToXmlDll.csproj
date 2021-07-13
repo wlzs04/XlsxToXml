@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="EPPlus">
       <HintPath>EPPlus.dll</HintPath>
     </Reference>
