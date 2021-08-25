@@ -1,6 +1,4 @@
-﻿using OfficeOpenXml;
-using OfficeOpenXml.Drawing;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,7 +23,7 @@ namespace XlsxToXmlDll
         /// </summary>
         /// <param name="toolRootPath"></param>
         /// <param name="logCallback"></param>
-        public static void Init(string toolRootPath, Action<bool, object> logCallback)
+        public static void Init(string toolRootPath, Action<bool,object> logCallback)
         {
             UnInit();
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -144,7 +142,11 @@ namespace XlsxToXmlDll
                         {
                             string[] differentFilePathParamList = differentFilePath.Split(' ');
                             string filePath = GetImportXlsxAbsolutePath() + "/" + differentFilePathParamList[differentFilePathParamList.Length - 1];
-                            if (CheckIsXlsxFile(filePath, false))
+                            if (Directory.Exists(filePath))
+                            {
+                                fileRelaticePathList.AddRange(GetDirectoryXlsxFileRelativeList(filePath));
+                            }
+                            else if (CheckIsXlsxFile(filePath, false))
                             {
                                 fileRelaticePathList.Add(differentFilePathParamList[differentFilePathParamList.Length - 1]);
                             }
@@ -156,7 +158,6 @@ namespace XlsxToXmlDll
             {
                 Log(false, "选择差异文件失败！可能是没有在配置文件Config.xml中的ProjectVersionTool属性设置svn或git，又或者是安装svn或git时没添加命令行工具。");
                 Log(false, exception);
-                throw;
             }
             return fileRelaticePathList;
         }
@@ -519,27 +520,6 @@ namespace XlsxToXmlDll
         public static string GetToolRootPath()
         {
             return toolRootPath;
-        }
-
-        public static void Test()
-        {
-            string imageRootPath = @"C:\Users\1\Desktop\Image\";
-            DirectoryInfo directoryInfo = new DirectoryInfo(imageRootPath);
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            using (ExcelPackage package = new ExcelPackage(new FileInfo(@"C:\Users\1\Desktop\test.xlsx")))
-            {
-                ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("test");//创建worksheet
-                int index = 0;
-                foreach (var item in directoryInfo.GetFiles())
-                {
-                    ExcelPicture picture = worksheet.Drawings.AddPicture(index.ToString(), item);
-                    picture.From.Column = 1;
-                    picture.From.Row = index;
-                    picture.SetSize(100, 100);
-                    index++;
-                }
-                package.Save();
-            }
         }
     }
 }
