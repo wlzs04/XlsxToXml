@@ -75,9 +75,9 @@
         <bool>Convert.ToBoolean(attributeValue);</bool>
         <SplitStringList><![CDATA[new {propertyClassName}();
                         string[] valueList =  attributeValue.Split(new char[] {'{propertyClassParam1}'},StringSplitOptions.RemoveEmptyEntries);
-                        foreach (string valueString in valueList)
+                        foreach (string tempValueString in valueList)
                         {
-                            attributeValue = valueString;
+                            attributeValue = tempValueString;
                             {propertyClassName1} propertyValue = {convertFunction1}
                             {propertyValueName}.Add(propertyValue);
                         }]]></SplitStringList>
@@ -131,7 +131,7 @@
         <bool>stringBuilder.Append($"{{propertyValueName}}{split}");</bool>
         <SplitStringList><![CDATA[foreach (var item in {propertyValueName})
             {
-                stringBuilder.Append( item.+"{propertyClassParam1}");
+                stringBuilder.Append( item+"{propertyClassParam1}");
             }
             if({propertyValueName}.Count>0)
             {
