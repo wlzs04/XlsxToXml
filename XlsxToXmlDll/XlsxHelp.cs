@@ -1072,7 +1072,10 @@ namespace XlsxToXmlDll
         void CheckValueTypeByIndex(int row, int col)
         {
             XlsxPropertyClass xlsxPropertyClass = propertyClassList[col];
-            object value = xlsxDataRowCollection[row][needExportInfoList[col].index];
+			//这里主动将object转化成string，举例子
+			//value="1.33",Convert.ToInt32((object)value);不会报错，返回1；
+			//Convert.ToInt32((string)value);会报错
+            string value = xlsxDataRowCollection[row][needExportInfoList[col].index].ToString();
             try
             {
                 if (xlsxPropertyClass.classType == "int")
