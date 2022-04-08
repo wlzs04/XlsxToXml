@@ -296,7 +296,7 @@
         <bool>stringBuilder.Append($"{{propertyValueName}}{split}");</bool>
         <SplitStringList><![CDATA[foreach (var item in {propertyValueName})
             {
-                stringBuilder.Append( item.+"{propertyClassParam1}");
+                stringBuilder.Append( item + "{propertyClassParam1}");
             }
             if({propertyValueName}.Count>0)
             {
