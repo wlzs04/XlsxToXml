@@ -20,8 +20,9 @@
       <DefaultRecorderParentClassName>RecorderBase</DefaultRecorderParentClassName>
       <RecorderKeyUnknownClassTypeToInt>(int){key}</RecorderKeyUnknownClassTypeToInt>
       <ClassTypeInfoMap>
-        <int normalValue="int" classValue="int" isSpecial="false" />
         <string normalValue="string" classValue="string" isSpecial="false" />
+        <int normalValue="int" classValue="int" isSpecial="false" />
+        <long normalValue="long" classValue="long" isSpecial="false" />
         <float normalValue="float" classValue="float" isSpecial="false" />
         <bool normalValue="bool" classValue="bool" isSpecial="false" />
         <SplitStringList normalValue="List" classValue="List" isSpecial="true" />
@@ -30,10 +31,10 @@
         <KeyValueMap normalValue="Dictionary" classValue="Dictionary" isSpecial="true" />
         <StructList normalValue="List" classValue="List" isSpecial="true" />
         <StructMap normalValue="Dictionary" classValue="Dictionary" isSpecial="true" />
-        <Vector3 normalValue="UnityEngine.Vector3" classValue="UnityEngine.Vector3" isSpecial="false" />
-        <Vector3Int normalValue="UnityEngine.Vector3Int" classValue="UnityEngine.Vector3Int" isSpecial="false" />
         <Vector2 normalValue="UnityEngine.Vector2" classValue="UnityEngine.Vector2" isSpecial="false" />
         <Vector2Int normalValue="UnityEngine.Vector2Int" classValue="UnityEngine.Vector2Int" isSpecial="false" />
+        <Vector3 normalValue="UnityEngine.Vector3" classValue="UnityEngine.Vector3" isSpecial="false" />
+        <Vector3Int normalValue="UnityEngine.Vector3Int" classValue="UnityEngine.Vector3Int" isSpecial="false" />
         <Color normalValue="UnityEngine.Color" classValue="UnityEngine.Color" isSpecial="false" />
       </ClassTypeInfoMap>
       <ClassPropertyTemplateMap>
@@ -65,14 +66,14 @@
                 string attributeValue = stringArray[{propertyIndex}];
                 {propertyValueName} = {convertFunction}
             }]]></StructLoadField>
-        <StructFieldString addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[
-            {toStringFunction}]]></StructFieldString>
+        <StructFieldString addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[            {toStringFunction}]]></StructFieldString>
       </ClassPropertyTemplateMap>
       <ConvertFunctionTemplateMap>
-        <int>Convert.ToInt32(attributeValue);</int>
         <string>attributeValue;</string>
-        <float>Convert.ToSingle(attributeValue);</float>
-        <bool>Convert.ToBoolean(attributeValue);</bool>
+        <int>int.Parse(attributeValue);</int>
+        <long>long.Parse(attributeValue);</long>
+        <float>float.Parse(attributeValue);</float>
+        <bool>bool.Parse(attributeValue);</bool>
 		<SplitStringList><![CDATA[HelpManager.ConvertStringToList<{propertyClassName1}>(attributeValue, '{propertyClassParam1}');]]></SplitStringList>
 		<SplitStringMap><![CDATA[HelpManager.ConvertStringToMap<{propertyClassName1}, {propertyClassName2}>(attributeValue, '{propertyClassParam1}', '{propertyClassParam2}');]]></SplitStringMap>
 		<ValueList><![CDATA[GetValueList<{propertyClassName1}>(element);]]></ValueList>
@@ -91,13 +92,9 @@
                             propertyValue.LoadFromXmlNode(keyValueNode);
                             {propertyValueName}.Add(propertyValue.{structMapKeyName}, propertyValue);
                         }]]></StructMap>
-        <custom><![CDATA[HelpManager.ConvertStringToObjectByType<{propertyClassName}>(attributeValue);]]></custom>
+        <custom><![CDATA[HelpManager.ConvertStringToObject<{propertyClassName}>(attributeValue);]]></custom>
       </ConvertFunctionTemplateMap>
       <ToStringFunctionTemplateMap>
-        <int>stringBuilder.Append($"{{propertyValueName}}{split}");</int>
-        <string>stringBuilder.Append($"{{propertyValueName}}{split}");</string>
-        <float>stringBuilder.Append($"{{propertyValueName}}{split}");</float>
-        <bool>stringBuilder.Append($"{{propertyValueName}}{split}");</bool>
         <SplitStringList><![CDATA[foreach (var item in {propertyValueName})
             {
                 stringBuilder.Append( item+"{propertyClassParam1}");
@@ -137,8 +134,9 @@
       <DefaultRecorderParentClassName>RecorderBase</DefaultRecorderParentClassName>
       <RecorderKeyUnknownClassTypeToInt>{key}.ordinal()</RecorderKeyUnknownClassTypeToInt>
       <ClassTypeInfoMap>
-        <int normalValue="int" classValue="Integer" isSpecial="false" />
         <string normalValue="String" classValue="String" isSpecial="false" />
+        <int normalValue="int" classValue="Integer" isSpecial="false" />
+        <long normalValue="int" classValue="Long" isSpecial="false" />
         <float normalValue="float" classValue="Float" isSpecial="false" />
         <bool normalValue="boolean" classValue="Boolean" isSpecial="false" />
         <SplitStringList normalValue="java.util.ArrayList" classValue="java.util.ArrayList" isSpecial="true" />
@@ -147,10 +145,10 @@
         <KeyValueMap normalValue="java.util.HashMap" classValue="java.util.HashMap" isSpecial="true" />
         <StructList normalValue="java.util.ArrayList" classValue="java.util.ArrayList" isSpecial="true" />
         <StructMap normalValue="java.util.HashMap" classValue="java.util.HashMap" isSpecial="true" />
-        <Vector3 normalValue="UnityEngine.Vector3" classValue="UnityEngine.Vector3" isSpecial="false" />
-        <Vector3Int normalValue="UnityEngine.Vector3Int" classValue="UnityEngine.Vector3Int" isSpecial="false" />
         <Vector2 normalValue="UnityEngine.Vector2" classValue="UnityEngine.Vector2" isSpecial="false" />
         <Vector2Int normalValue="UnityEngine.Vector2Int" classValue="UnityEngine.Vector2Int" isSpecial="false" />
+        <Vector3 normalValue="UnityEngine.Vector3" classValue="UnityEngine.Vector3" isSpecial="false" />
+        <Vector3Int normalValue="UnityEngine.Vector3Int" classValue="UnityEngine.Vector3Int" isSpecial="false" />
         <Color normalValue="UnityEngine.Color" classValue="UnityEngine.Color" isSpecial="false" />
       </ClassTypeInfoMap>
       <ClassPropertyTemplateMap>
@@ -179,12 +177,12 @@
                 string attributeValue = stringArray[{propertyIndex}];
                 {propertyValueName} = {convertFunction}
             }]]></StructLoadField>
-        <StructFieldString addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[
-            {toStringFunction}]]></StructFieldString>
+        <StructFieldString addInAttribute="true" addInElement="true" addIsSpecialClassType="true" addIsNotSpecialClassType="true" addIsParentProperty="true"><![CDATA[            {toStringFunction}]]></StructFieldString>
       </ClassPropertyTemplateMap>
       <ConvertFunctionTemplateMap>
-        <int>Integer.parseInt(nodeValue);</int>
         <string>nodeValue;</string>
+        <int>Integer.parseInt(nodeValue);</int>
+        <long>Long.parseLong(nodeValue);</long>
         <float>Float.parseFloat(nodeValue);</float>
         <bool>Boolean.parseBoolean(nodeValue);</bool>
         <SplitStringList><![CDATA[new {propertyClassName}();
@@ -259,10 +257,6 @@
         <custom>({propertyClassName})logic.start.XStreamHelper.parseString({propertyClassName}.class,nodeValue);</custom>
       </ConvertFunctionTemplateMap>
       <ToStringFunctionTemplateMap>
-        <int>stringBuilder.Append($"{{propertyValueName}}{split}");</int>
-        <string>stringBuilder.Append($"{{propertyValueName}}{split}");</string>
-        <float>stringBuilder.Append($"{{propertyValueName}}{split}");</float>
-        <bool>stringBuilder.Append($"{{propertyValueName}}{split}");</bool>
         <SplitStringList><![CDATA[foreach (var item in {propertyValueName})
             {
                 stringBuilder.Append( item + "{propertyClassParam1}");
