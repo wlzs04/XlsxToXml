@@ -136,7 +136,7 @@
       <ClassTypeInfoMap>
         <string normalValue="String" classValue="String" isSpecial="false" />
         <int normalValue="int" classValue="Integer" isSpecial="false" />
-        <long normalValue="int" classValue="Long" isSpecial="false" />
+        <long normalValue="long" classValue="Long" isSpecial="false" />
         <float normalValue="float" classValue="Float" isSpecial="false" />
         <bool normalValue="boolean" classValue="Boolean" isSpecial="false" />
         <SplitStringList normalValue="java.util.ArrayList" classValue="java.util.ArrayList" isSpecial="true" />
