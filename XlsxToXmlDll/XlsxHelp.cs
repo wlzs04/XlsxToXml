@@ -251,7 +251,7 @@ namespace XlsxToXmlDll
             string namespaceString = XlsxManager.GetRelativePath(ConfigData.GetSingle().ImportXlsxAbsolutePath, xlsxFileInfo.Directory.FullName);
             if (namespaceString != "" && namespaceString != ".")
             {
-                namespaceString = "." + namespaceString.Replace("\\", ".");
+                namespaceString = "." + namespaceString.Replace("\\", ".").Replace("/", ".");
             }
             else
             {
@@ -664,6 +664,7 @@ namespace XlsxToXmlDll
             XmlWriterSettings xws = new XmlWriterSettings();
             xws.OmitXmlDeclaration = true;
             xws.Indent = true;
+            xws.NewLineChars = "\n";
             FileInfo fileInfo = new FileInfo(exportXmlFilePath);
             if (!fileInfo.Directory.Exists)
             {

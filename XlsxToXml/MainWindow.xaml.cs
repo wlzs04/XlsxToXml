@@ -294,7 +294,7 @@ namespace XlsxToXml
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 string allRecorderOverviewRootPath = dialog.FileName;
-                string allRecorderOverviewFilePath = $"{allRecorderOverviewRootPath}\\{allRecorderOverviewFileName}";
+                string allRecorderOverviewFilePath = $"{allRecorderOverviewRootPath}/{allRecorderOverviewFileName}";
                 bool needExport = false;
                 if (File.Exists(allRecorderOverviewFilePath))
                 {

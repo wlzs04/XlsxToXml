@@ -204,7 +204,7 @@ namespace XlsxToXmlDll
             if (configData.CodeConfigDataMap.ContainsKey(codeName))
             {
                 configData.CodeConfigDataMap[codeName].ExportXmlAbsolutePath = path;
-                configData.CodeConfigDataMap[codeName].ExportXmlRelativePath = $"/{GetRelativePath(XlsxManager.GetToolRootPath(), path)}/";
+                configData.CodeConfigDataMap[codeName].ExportXmlRelativePath = $"/{GetRelativePath(GetToolRootPath(), path)}/";
                 configData.NeedSave = true;
             }
             else
@@ -231,7 +231,7 @@ namespace XlsxToXmlDll
             if (configData.CodeConfigDataMap.ContainsKey(codeName))
             {
                 configData.CodeConfigDataMap[codeName].ExportCodeAbsolutePath = path;
-                configData.CodeConfigDataMap[codeName].ExportCodeRelativePath = $"/{GetRelativePath(XlsxManager.GetToolRootPath(), path)}/";
+                configData.CodeConfigDataMap[codeName].ExportCodeRelativePath = $"/{GetRelativePath(GetToolRootPath(), path)}/";
                 configData.NeedSave = true;
             }
             else
@@ -479,42 +479,14 @@ namespace XlsxToXmlDll
         }
 
         /// <summary>
-        /// 获得两个文件的相对路径，因为Path.GetRelativePath在.net core2之后才有，所以临时使用，判断规则和返回值有可能有问题
+        /// 获得两个文件的相对路径，为了保证平台之间的一致性，使用'/'作为路径分隔符
         /// </summary>
         /// <param name="fromPath"></param>
         /// <param name="toPath"></param>
         /// <returns></returns>
         public static string GetRelativePath(string fromPath, string toPath)
         {
-            if (String.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
-            if (String.IsNullOrEmpty(toPath)) throw new ArgumentNullException("toPath");
-
-            if(Directory.Exists(fromPath) && !(fromPath.EndsWith("\\")||fromPath.EndsWith("/")))
-            {
-                fromPath += "\\";
-            }
-            if (Directory.Exists(toPath) && (!toPath.EndsWith("\\") || !toPath.EndsWith("/")))
-            {
-                toPath += "\\";
-            }
-
-            Uri fromUri = new Uri(fromPath);
-            Uri toUri = new Uri(toPath);
-
-            if (fromUri.Scheme != toUri.Scheme) { return toPath; } // path can't be made relative.
-
-            Uri relativeUri = fromUri.MakeRelativeUri(toUri);
-            String relativePath = Uri.UnescapeDataString(relativeUri.ToString());
-
-            if (toUri.Scheme.Equals("file", StringComparison.InvariantCultureIgnoreCase))
-            {
-                relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-            }
-            if(relativePath.EndsWith("\\") || relativePath.EndsWith("/"))
-            {
-                relativePath = relativePath.Substring(0,relativePath.Length-1);
-            }
-            return relativePath;
+            return Path.GetRelativePath(fromPath, toPath).Replace('\\', '/');
         }
 
         public static string GetToolRootPath()

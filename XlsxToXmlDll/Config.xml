@@ -1,5 +1,5 @@
 ﻿<Config>
-  <ImportXlsxRelativePath>/..\..\..\..\..\YiSiHoliday\Document\Artres\Config\Recorder\/</ImportXlsxRelativePath>
+  <ImportXlsxRelativePath>/../../../../../YiSiHoliday/Document/Artres/Config/Recorder//</ImportXlsxRelativePath>
   <ProjectVersionTool>git</ProjectVersionTool>
   <CodeConfigDataMap>
     <CodeConfigData>
@@ -9,9 +9,9 @@
       <XmlRootNodeName>{className}</XmlRootNodeName>
       <XmlRecorderNodeName>Recorder</XmlRecorderNodeName>
       <ExportAllXmlToTheSamePath>false</ExportAllXmlToTheSamePath>
-      <ExportXmlRelativePath>/..\..\..\..\..\YiSiHoliday\Assets\Artres\Config\Recorder/</ExportXmlRelativePath>
+      <ExportXmlRelativePath>/../../../../../YiSiHoliday/Assets/Artres/Config/Recorder/</ExportXmlRelativePath>
       <CodeFileName>{className}.cs</CodeFileName>
-      <ExportCodeRelativePath>/..\..\..\..\..\YiSiHoliday\Assets\Script\Config\Recorder/</ExportCodeRelativePath>
+      <ExportCodeRelativePath>/../../../../../YiSiHoliday/Assets/Script/Config/Recorder/</ExportCodeRelativePath>
       <RecorderTemplateFileRelativePath>/CodeInfo/CS/CSRecorderTemplate.txt</RecorderTemplateFileRelativePath>
       <EnumTemplateFileRelativePath>/CodeInfo/CS/CSEnumTemplate.txt</EnumTemplateFileRelativePath>
       <StructTemplateFileRelativePath>/CodeInfo/CS/CSStructTemplate.txt</StructTemplateFileRelativePath>
@@ -73,41 +73,10 @@
         <string>attributeValue;</string>
         <float>Convert.ToSingle(attributeValue);</float>
         <bool>Convert.ToBoolean(attributeValue);</bool>
-        <SplitStringList><![CDATA[new {propertyClassName}();
-                        string[] valueList =  attributeValue.Split(new char[] {'{propertyClassParam1}'},StringSplitOptions.RemoveEmptyEntries);
-                        foreach (string tempValueString in valueList)
-                        {
-                            attributeValue = tempValueString;
-                            {propertyClassName1} propertyValue = {convertFunction1}
-                            {propertyValueName}.Add(propertyValue);
-                        }]]></SplitStringList>
-        <SplitStringMap><![CDATA[new {propertyClassName}();
-                        string[] pairList =  attributeValue.Split(new char[] {'{propertyClassParam1}'},StringSplitOptions.RemoveEmptyEntries);
-                        foreach (string pair in pairList)
-                        {
-                            string[] keyValueList =  pair.Split(new char[] {'{propertyClassParam2}'},StringSplitOptions.RemoveEmptyEntries);
-                            attributeValue = keyValueList[0];
-                            {propertyClassName1} propertyKey = {convertFunction1}
-                            attributeValue = keyValueList[1];
-                            {propertyClassName2} propertyValue = {convertFunction2}
-                            {propertyValueName}.Add(propertyKey,propertyValue);
-                        }]]></SplitStringMap>
-        <ValueList><![CDATA[new {propertyClassName}();
-                        foreach (XElement keyValueNode in element.Elements())
-                        {
-                            string attributeValue = keyValueNode.Attribute("value").Value;
-                            {propertyClassName1} propertyValue = {convertFunction1}
-                            {propertyValueName}.Add(propertyValue);
-                        }]]></ValueList>
-        <KeyValueMap><![CDATA[new {propertyClassName}();
-                        foreach (XElement keyValueNode in element.Elements())
-                        {
-                            string attributeValue = keyValueNode.Attribute("key").Value;
-                            {propertyClassName1} propertyKey = {convertFunction1}
-                            attributeValue = keyValueNode.Attribute("value").Value;
-                            {propertyClassName2} propertyValue = {convertFunction2}
-                            {propertyValueName}.Add(propertyKey, propertyValue);
-                        }]]></KeyValueMap>
+		<SplitStringList><![CDATA[HelpManager.ConvertStringToList<{propertyClassName1}>(attributeValue, '{propertyClassParam1}');]]></SplitStringList>
+		<SplitStringMap><![CDATA[HelpManager.ConvertStringToMap<{propertyClassName1}, {propertyClassName2}>(attributeValue, '{propertyClassParam1}', '{propertyClassParam2}');]]></SplitStringMap>
+		<ValueList><![CDATA[GetValueList<{propertyClassName1}>(element);]]></ValueList>
+		<KeyValueMap><![CDATA[GetKeyValueMap<{propertyClassName1}, {propertyClassName2}>(element);]]></KeyValueMap>
         <StructList><![CDATA[new {propertyClassName}();
                         foreach (XElement keyValueNode in element.Elements())
                         {
@@ -122,7 +91,7 @@
                             propertyValue.LoadFromXmlNode(keyValueNode);
                             {propertyValueName}.Add(propertyValue.{structMapKeyName}, propertyValue);
                         }]]></StructMap>
-        <custom>({propertyClassName})HelpManager.ConvertStringToObjectByType(typeof({propertyClassName}),attributeValue);</custom>
+        <custom><![CDATA[HelpManager.ConvertStringToObjectByType<{propertyClassName}>(attributeValue);]]></custom>
       </ConvertFunctionTemplateMap>
       <ToStringFunctionTemplateMap>
         <int>stringBuilder.Append($"{{propertyValueName}}{split}");</int>
@@ -157,9 +126,9 @@
       <XmlRootNodeName>list</XmlRootNodeName>
       <ExportAllXmlToTheSamePath>true</ExportAllXmlToTheSamePath>
       <XmlRecorderNodeName>Config.Recorder{nameSpaceRelativeName}.{className}</XmlRecorderNodeName>
-      <ExportXmlRelativePath>/..\..\..\..\..\..\..\Server\Artres\Config\Recorder/</ExportXmlRelativePath>
+      <ExportXmlRelativePath>/../../../../../../../Server/Artres/Config/Recorder/</ExportXmlRelativePath>
       <CodeFileName>{className}.java</CodeFileName>
-      <ExportCodeRelativePath>/..\..\..\..\..\..\..\Server\Script\src\Config\Recorder/</ExportCodeRelativePath>
+      <ExportCodeRelativePath>/../../../../../../../Server/Script/src/Config/Recorder/</ExportCodeRelativePath>
       <RecorderTemplateFileRelativePath>/CodeInfo/Java/JavaRecorderTemplate.txt</RecorderTemplateFileRelativePath>
       <EnumTemplateFileRelativePath>/CodeInfo/Java/JavaEnumTemplate.txt</EnumTemplateFileRelativePath>
       <StructTemplateFileRelativePath>/CodeInfo/Java/JavaStructTemplate.txt</StructTemplateFileRelativePath>
