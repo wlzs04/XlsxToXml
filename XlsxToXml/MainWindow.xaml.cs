@@ -85,9 +85,66 @@ namespace XlsxToXml
             }
         }
 
+        /// <summary>
+        /// 获得差异文件的相对路径
+        /// </summary>
+        /// <param name="projectVersionTool">版本工具</param>
+        /// <returns></returns>
+        List<string> GetDifferentFileRelativePathList(string projectVersionTool)
+        {
+            List<string> fileRelaticePathList = new List<string>();
+            try
+            {
+                string differentFileListString = "";
+                if (projectVersionTool == "git")
+                {
+                    differentFileListString = ProcessHelper.RunWithResult("git", XlsxManager.GetImportXlsxAbsolutePath(), $"status {XlsxManager.GetImportXlsxAbsolutePath()} -s");
+                }
+                else if (projectVersionTool == "svn")
+                {
+                    differentFileListString = ProcessHelper.RunWithResult("svn", XlsxManager.GetImportXlsxAbsolutePath(), $"status");
+                }
+                else
+                {
+                    Log(false, $"当前版本管理工具:{projectVersionTool}不支持！");
+                }
+                if (string.IsNullOrEmpty(differentFileListString))
+                {
+                    Log(true,"没有差异文件！");
+                }
+                else
+                {
+                    string[] differentFileList = differentFileListString.Split('\n');
+                    foreach (string differentFileString in differentFileList)
+                    {
+                        string differentFilePath = differentFileString.Trim();
+                        if (differentFilePath.StartsWith("M") || differentFilePath.StartsWith("?"))
+                        {
+                            string[] differentFilePathParamList = differentFilePath.Split(' ');
+                            string filePath = XlsxManager.GetImportXlsxAbsolutePath() + "/" + differentFilePathParamList[differentFilePathParamList.Length - 1];
+                            if (Directory.Exists(filePath))
+                            {
+                                fileRelaticePathList.AddRange(XlsxManager.GetDirectoryXlsxFileRelativeList(filePath));
+                            }
+                            else if (XlsxManager.CheckIsXlsxFile(filePath))
+                            {
+                                fileRelaticePathList.Add(differentFilePathParamList[differentFilePathParamList.Length - 1]);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                Log(false,"选择差异文件失败！可能是没有对应版本工具、或是安装svn或git时没添加命令行工具、或是工具没有配置到环境变量中");
+                Log(false, exception);
+            }
+            return fileRelaticePathList;
+        }
+
         private void SelectDifferentFileButton_Click(object sender, RoutedEventArgs e)
         {
-            List<string> fileList = XlsxManager.GetDifferentFileRelativePathList();
+            List<string> fileList = GetDifferentFileRelativePathList("git");
             foreach (var item in fileList)
             {
                 AddRelativeFileToFileList(item);

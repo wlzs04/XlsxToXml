@@ -110,59 +110,6 @@ namespace XlsxToXmlDll
         }
 
         /// <summary>
-        /// 获得差异文件的相对路径
-        /// </summary>
-        /// <returns></returns>
-        public static List<string> GetDifferentFileRelativePathList()
-        {
-            ConfigData configData = ConfigData.GetSingle();
-            List<string> fileRelaticePathList = new List<string>();
-            try
-            {
-                string differentFileListString = "";
-                if (configData.ProjectVersionTool == "git")
-                {
-                    differentFileListString = ProcessHelper.Run("git.exe", GetImportXlsxAbsolutePath(), $"status {GetImportXlsxAbsolutePath()} -s");
-                }
-                else if (configData.ProjectVersionTool == "svn")
-                {
-                    differentFileListString = ProcessHelper.Run("svn.exe", GetImportXlsxAbsolutePath(), $"status");
-                }
-                if (string.IsNullOrEmpty(differentFileListString))
-                {
-                    Log(true, "没有差异文件！");
-                }
-                else
-                {
-                    string[] differentFileList = differentFileListString.Split('\n');
-                    foreach (string differentFileString in differentFileList)
-                    {
-                        string differentFilePath = differentFileString.Trim();
-                        if (differentFilePath.StartsWith("M") || differentFilePath.StartsWith("?"))
-                        {
-                            string[] differentFilePathParamList = differentFilePath.Split(' ');
-                            string filePath = GetImportXlsxAbsolutePath() + "/" + differentFilePathParamList[differentFilePathParamList.Length - 1];
-                            if (Directory.Exists(filePath))
-                            {
-                                fileRelaticePathList.AddRange(GetDirectoryXlsxFileRelativeList(filePath));
-                            }
-                            else if (CheckIsXlsxFile(filePath, false))
-                            {
-                                fileRelaticePathList.Add(differentFilePathParamList[differentFilePathParamList.Length - 1]);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception exception)
-            {
-                Log(false, "选择差异文件失败！可能是没有在配置文件Config.xml中的ProjectVersionTool属性设置svn或git，又或者是安装svn或git时没添加命令行工具。");
-                Log(false, exception);
-            }
-            return fileRelaticePathList;
-        }
-
-        /// <summary>
         /// 设置指定代码名称是否需要导出
         /// </summary>
         /// <param name="codeName"></param>

@@ -1,6 +1,5 @@
 ﻿<Config>
   <ImportXlsxRelativePath>/../../../../../YiSiHoliday/Document/Artres/Config/Recorder//</ImportXlsxRelativePath>
-  <ProjectVersionTool>git</ProjectVersionTool>
   <CodeConfigDataMap>
     <CodeConfigData>
       <CodeName>C#</CodeName>
@@ -9,9 +8,9 @@
       <XmlRootNodeName>{className}</XmlRootNodeName>
       <XmlRecorderNodeName>Recorder</XmlRecorderNodeName>
       <ExportAllXmlToTheSamePath>false</ExportAllXmlToTheSamePath>
-      <ExportXmlRelativePath>/../../../../../YiSiHoliday/Assets/Artres/Config/Recorder/</ExportXmlRelativePath>
+      <ExportXmlRelativePath>/../../../../../YiSiHoliday/Client/GameProject/Assets/Artres/Config/Recorder/</ExportXmlRelativePath>
       <CodeFileName>{className}.cs</CodeFileName>
-      <ExportCodeRelativePath>/../../../../../YiSiHoliday/Assets/Script/Config/Recorder/</ExportCodeRelativePath>
+      <ExportCodeRelativePath>/../../../../../YiSiHoliday/Client/GameProject/Assets/Script/Config/Recorder/</ExportCodeRelativePath>
       <RecorderTemplateFileRelativePath>/CodeInfo/CS/CSRecorderTemplate.txt</RecorderTemplateFileRelativePath>
       <EnumTemplateFileRelativePath>/CodeInfo/CS/CSEnumTemplate.txt</EnumTemplateFileRelativePath>
       <StructTemplateFileRelativePath>/CodeInfo/CS/CSStructTemplate.txt</StructTemplateFileRelativePath>

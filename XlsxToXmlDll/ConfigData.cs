@@ -228,7 +228,6 @@ namespace XlsxToXmlDll
     /// </summary>
     class ConfigData
     {
-        public string ProjectVersionTool { get; set; } = "git";
         public string ImportXlsxRelativePath { get; set; } = "/../";
         public string ImportXlsxAbsolutePath { get; set; } = "/../";
 
@@ -297,10 +296,6 @@ namespace XlsxToXmlDll
                 if (attributeName == "ImportXlsxRelativePath")
                 {
                     ImportXlsxRelativePath = attributeValue;
-                }
-                else if (attributeName == "ProjectVersionTool")
-                {
-                    ProjectVersionTool = attributeValue;
                 }
                 else if (attributeName == "CodeConfigDataMap")
                 {

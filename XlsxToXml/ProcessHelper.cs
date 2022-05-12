@@ -18,22 +18,24 @@ namespace XlsxToXml
         /// <param name="workDirectory"></param>
         /// <param name="arguments"></param>
         /// <returns></returns>
-        public static string Run(string processPath,string workDirectory, string arguments)
+        public static string RunWithResult(string processPath, string workDirectory, string arguments)
         {
-            var info = new ProcessStartInfo(processPath, arguments)
-            {
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardInput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                WorkingDirectory = workDirectory
-            };
-            var process = new Process
-            {
-                StartInfo = info,
-            };
-            process.Start();
+            //mac在获取环境变量时缺少部分路径，所以临时添加，然后删除
+            //string oldPath = Environment.GetEnvironmentVariable("PATH");
+            //Environment.SetEnvironmentVariable("PATH", oldPath + ":/usr/local/bin");
+            //Environment.SetEnvironmentVariable("PATH", oldPath);
+            ProcessStartInfo info = new ProcessStartInfo();
+            info.FileName = processPath;
+            info.WorkingDirectory = workDirectory;
+            info.Arguments = arguments;
+            info.CreateNoWindow = true;
+            info.RedirectStandardOutput = true;
+            info.RedirectStandardInput = true;
+            info.RedirectStandardError = true;
+            info.UseShellExecute = false;
+
+            Process process = Process.Start(info);
+            process.WaitForExit();
             string content = process.StandardOutput.ReadToEnd();
             process.Close();
             return content;

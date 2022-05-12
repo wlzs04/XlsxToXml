@@ -59,7 +59,7 @@ namespace XlsxToXml
 
         private void OpenExportXmlRootPathButton_Click(object sender, RoutedEventArgs e)
         {
-            ProcessHelper.Run("explorer.exe", "", exportXmlRootPathTextBox.Text);
+            ProcessHelper.RunWithResult("explorer.exe", "", exportXmlRootPathTextBox.Text);
         }
 
         private void SelectExportCodeRootPathButton_Click(object sender, RoutedEventArgs e)
@@ -76,7 +76,7 @@ namespace XlsxToXml
 
         private void OpenExportCodeRootPathButton_Click(object sender, RoutedEventArgs e)
         {
-            ProcessHelper.Run("explorer.exe", "", exportCodeRootPathTextBox.Text);
+            ProcessHelper.RunWithResult("explorer.exe", "", exportCodeRootPathTextBox.Text);
         }
     }
 }
